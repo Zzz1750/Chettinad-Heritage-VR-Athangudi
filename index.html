@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>360° VR Viewer</title>
+    <title>VR 360° Viewer</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
     <style>
         #loading-container {
             position: fixed;
@@ -34,59 +35,126 @@
             background: #2196F3;
             transition: width 0.3s;
         }
+        #loading-status {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
     <div id="loading-container">
         <h2>Loading VR Experience</h2>
         <div id="loading-bar">
             <div id="progress"></div>
         </div>
+        <div id="loading-status">Starting load...</div>
     </div>
 
-    <a-scene style="display: none;">
-        <a-sky id="sky" src="7_Nero_AI_Image_Denoiser_Nero_AI_Image_Upscaler_Photo_Face.png"></a-sky>
-        <a-entity camera look-controls></a-entity>
+    <!-- A-Frame Scene (hidden until loaded) -->
+    <a-scene style="display: none;" vr-mode-ui="enabled: false">
+        <!-- Sky will be set after preloading -->
+        <a-sky id="sky"></a-sky>
+        
+        <!-- Camera with controls -->
+        <a-entity camera look-controls wasd-controls position="0 1.6 0">
+            <a-entity 
+                laser-controls="hand: right" 
+                raycaster="objects: .clickable; far: 20; interval: 1000"
+                line="color: #118AFF; opacity: 0.75"></a-entity>
+        </a-entity>
+        
+        <!-- 3D Cycle Button -->
+        <a-entity class="clickable"
+            position="0 1.5 -2"
+            geometry="primitive: box; width: 0.5; height: 0.2; depth: 0.1"
+            material="color: #4CC3D9; shader: flat"
+            animation__hover="property: scale; to: 1.1 1.1 1.1; startEvents: mouseenter; dur: 200; easing: easeInOutQuad"
+            animation__hoverreset="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200; easing: easeInOutQuad"
+            animation__click="property: scale; to: 0.9 0.9 0.9; startEvents: click; dur: 100; easing: easeInOutQuad"
+            animation__clickreset="property: scale; to: 1 1 1; startEvents: animationcomplete__click; dur: 100; easing: easeInOutQuad">
+            
+            <!-- Button Label -->
+            <a-entity 
+                position="0 0 0.06"
+                text="value: Next Image; color: white; align: center; width: 2"
+                material="shader: msdf"></a-entity>
+        </a-entity>
     </a-scene>
 
     <script>
+        // Image cycle array - replace with your image paths
+        const images = ['1.png', '2.png', '3.png'];
+        let currentImageIndex = 0;
+        let loadedImages = 0;
+        const totalImages = images.length;
+        
+        // DOM elements
         const loadingContainer = document.getElementById('loading-container');
         const progressBar = document.getElementById('progress');
+        const loadingStatus = document.getElementById('loading-status');
         const scene = document.querySelector('a-scene');
         const sky = document.getElementById('sky');
-
-        scene.addEventListener('loaded', function() {
-            sky.addEventListener('materialtextureloaded', function() {
-                completeLoading();
+        const cycleButton = document.querySelector('.clickable');
+        
+        // Preload all images
+        function preloadImages() {
+            loadingStatus.textContent = `Preloading images (0/${totalImages})...`;
+            
+            images.forEach((imgSrc, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    loadedImages++;
+                    const progress = Math.floor((loadedImages / totalImages) * 90);
+                    progressBar.style.width = `${progress}%`;
+                    loadingStatus.textContent = `Preloading images (${loadedImages}/${totalImages})...`;
+                    
+                    if (loadedImages === totalImages) {
+                        initializeVRScene();
+                    }
+                };
+                img.onerror = function() {
+                    loadingStatus.textContent = `Error loading image: ${imgSrc}`;
+                    progressBar.style.backgroundColor = 'red';
+                };
+                img.src = imgSrc;
             });
-            
-            setTimeout(completeLoading, 3000);
-        });
-
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 10;
-            if (progress < 90) {
-                progressBar.style.width = `${progress}%`;
-            } else {
-                clearInterval(interval);
-            }
-        }, 200);
-
-        function completeLoading() {
-            progressBar.style.width = '100%';
-            
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                scene.style.display = 'block';
-            }, 500);
         }
-
-        sky.addEventListener('error', function() {
-            loadingContainer.innerHTML = '<h2 style="color:red">Error loading image</h2>' +
-                                      '<p>Please check the image URL</p>';
-            progressBar.style.backgroundColor = 'red';
-        });
+        
+        // Initialize VR scene after preloading
+        function initializeVRScene() {
+            loadingStatus.textContent = 'Initializing VR scene...';
+            progressBar.style.width = '95%';
+            
+            // Set initial image
+            sky.setAttribute('src', images[0]);
+            
+            // Wait for A-Frame to be ready
+            scene.addEventListener('loaded', function() {
+                // Finalize loading
+                progressBar.style.width = '100%';
+                setTimeout(function() {
+                    loadingContainer.style.display = 'none';
+                    scene.style.display = 'block';
+                    setupButton();
+                }, 500);
+            });
+        }
+        
+        // Cycle to next image
+        function cycleImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            sky.setAttribute('src', images[currentImageIndex]);
+        }
+        
+        // Set up button click handler
+        function setupButton() {
+            cycleButton.addEventListener('click', function() {
+                cycleImage();
+            });
+        }
+        
+        // Start preloading when window loads
+        window.addEventListener('load', preloadImages);
     </script>
 </body>
 </html>
