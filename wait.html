@@ -2,451 +2,836 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Athamgudi Palace VR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <title>Athamkudi VR</title>
+
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <style>
-    *{
-      user-select: none;
+    * {
+      user-select: none; 
     }
-    body{
-      cursor: default;
+    body {
+      background-color: black;
+      color: white;
+      margin: 0;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      overflow-x: hidden;
+    }
+
+    #main_container{
+      display: none;
+    }
+    
+
+    .scene-container {
+      width: 100%;
+      height: 70vh;
+      position: relative;
+      margin-bottom: 50px;
+    }
+
+    a-scene {
+      height: 100% !important;
+      width: 100% !important;
+      position: relative !important;
+      opacity: 0.4;
+    }
+
+    #heading {
+      position: absolute;
+      top: 20%;
+      left: 40px;
+      width: calc(100% - 40px);
+      font-size: 2.5rem;
+      z-index: 10;
+      pointer-events: none;
+      text-align: left;
       margin: 0;
       padding: 0;
     }
-    .clickable {
-      cursor: pointer;
+
+    #heading .vr-span {
+      font-size: 17px;
+      color: rgb(25, 84, 172);
+      padding-top: 6px;
+      margin-left: 8px;
+      display: inline-block;
+      vertical-align: top;
     }
-    #vr_taskbar {
-      position: fixed;
-      bottom: 20px;
+
+    #head_image_info {
+      position: absolute;
+      bottom: 0px;
+      right: 10px;
+      font-weight: 400;
+      font-size: 0.7rem;
+      z-index: 10;
+      pointer-events: none;
+      font-family: "Chakra Petch", sans-serif;
+      display: none;
+      opacity: 0.5;
+    }
+    
+    #intro_controls {
+      position: absolute;
+      top: 42%;
+      left: 40px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 10;
+      width: calc(100% - 40px);
+      opacity: 0.9;
+    }
+    
+    #play_intro {
+      background-color: rgb(25, 84, 172);
+      color: white;
+      border-radius: 20px;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    #play_intro:hover {
+      transform: scale(1.05);
+    }
+    
+    #play_intro_image {
+      filter: invert(100%);
+      width: 12px;
+      height: 12px;
+    }
+    
+    #play_intro_text {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    .volume_button {
+      filter: invert(100%);
+      width: 20px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    #more_button {
+      filter: invert(100%);
+      width: 20px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    #next_buttons {
+      position: absolute;
+      top: 70%;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.8); 
-      padding: 8px 16px; 
+      z-index: 10;
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 20px; 
-      border-radius: 25px; 
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+      max-width: 90%;
     }
     
-    #vr_taskbar img {
-      width: 20px; 
-      height: 20px;
+    .common_next_button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 10px 15px;
+      color: white;
+      font-size: 14px;
+      border-radius: 50px;
+      font-family: 'Chakra Petch', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
       cursor: pointer;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      object-fit: contain;
-      
     }
     
-    #vr_taskbar img:hover {
-      transform: scale(1.1); 
-      opacity: 0.8;
+    .common_next_button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
     }
     
-    #vr_taskbar img:active {
-      transform: scale(1.05); 
-      opacity: 1;
+    .button_icon {
+      width: 16px;
+      height: 16px;
+      filter: invert(100%);
+    }
+    
+    @keyframes beamSpin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .fade-out {
+      animation: fadeOut 0.5s ease-in-out forwards !important;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out forwards !important;
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 0.4; }
+      to { opacity: 0; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 0.4; }
     }
 
-    #navigation_bar {
-      position: fixed;
-      height: 100px;
-      width: 100px;
-      bottom: 10px; 
-      left: 20px;
-      border-radius: 12px;
-      
-    }
-    
-    
-    #navigation_bar img {
+    #about_athamkudi_button {
       position: absolute;
-      background-color: rgba(255, 255, 255, 0.6);
-      width: 15px;
-      height: 15px;
-      padding: 8px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    
-    #up_arrow {
-      display: none;
-      top: 0;
+      font-family: 'Chakra Petch';
+      top: 91%;
       left: 50%;
-      transform: translateX(-50%) rotate(0deg);
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      font-weight: 200;
+      width: 90%;
+      text-align: center;
     }
-    
-    #bottom_arrow {
-      display: none;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) rotate(180deg);
-    }
-    
-    #left_arrow {
-      display: none;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%) rotate(270deg);
-    }
-    
-    #right_arrow {
-      display: none;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
-    }
-    
-    #navigation_bar img:hover{
-      background-color: rgba(255, 255, 255, 0.9);
-      transition: 0.3s background-color ease;
-    }
-    
 
-    #main_container{
+    /* Default mobile styles for content elements */
+    #content_heading1 {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1rem;
+      text-align: center;
+      color: #ffffff;
+      margin-top: 60px;
+      letter-spacing: 1px;
+      font-weight: 400;
+      background: linear-gradient(to right, #ffffffd8, #ffffffeb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+      padding: 0 15px;
+    }
+
+    #content_para1 {
+      font-family: 'Chakra Petch';
+      font-size: 0.7rem;
+      color: #ffffffe9;
+      line-height: 1.6;
+      max-width: 70%;
+      margin: 30px auto;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      text-align: justify;
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.8s ease, transform 1s ease;
+    }
+
+    #content_image {
       display: block;
+      width: 100%;
+      max-width: 100%; /* Ensure it doesn't exceed container */
+      height: auto;
+      border-radius: 5px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+      margin: 0 auto; /* Center the image */
+    }
+    
+    #content_image_container {
+      margin: 40px auto;
+      width: 60%; /* Set width directly instead of max-width */
+      padding: 0;
+    }
+    
+    #content_image_fig {
+      font-family: 'Chakra Petch';
+      font-size: 0.8rem;
+      color: #ffffffb3;
+      margin-top: 2px; /* Reduced to minimal space */
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+      line-height: 1.3;
+      padding: 0 5px; /* Small side padding */
+    }
+    
+    #content_image_fig.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    #loader_position{
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
+
+    #content_para2 {
+      font-family: 'Chakra Petch';
+      font-size: 0.7rem;
+      color: #ffffffe9;
+      line-height: 1.6;
+      max-width: 70%;
+      margin: 30px auto;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      text-align: justify;
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 1s ease;
     }
-    #loading_name{
-      font-size: 24px;
-      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+    #content_para2.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .content-divider, #content_divider {
+      width: 10%;
+      height: 0.5px;
+      background: rgba(255, 255, 255, 0.693);
+      margin: 60px auto;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    
+    .content-divider.visible, #content_divider.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .content-divider.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Animation classes */
+    @keyframes fadeInHeading {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInPara {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #content_heading1.visible,
+    #content_para1.visible,
+    #content_image.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #content_para1.visible {
+      animation: fadeInPara 1s ease-out forwards;
+    }
+
+    #content_para1.visible::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .vignette-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5) 100%);
+    }
+    
+    .scene-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1; 
+      display: none; 
+    }
+    
+    @media (max-width: 1023px) {
+      .scene-overlay {
+        display: block;
+        pointer-events: auto; 
+      }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 768px) {
+      #heading {
+        top: 30%;
+        font-size: 4rem;
+        left: 15%;
+        width: calc(100% - 80px);
+      }
+      
+      #intro_controls {
+        top: 53%;
+        left: 15%;
+        width: calc(100% - 80px);
+        gap: 20px;
+      }
+      
+      #play_intro {
+        padding: 12px 15px;
+      }
+      
+      #play_intro_text {
+        font-size: 1rem;
+      }
+      
+      .volume_button, #more_button {
+        width: 22px;
+      }
+      
+      #next_buttons {
+        gap: 30px;
+        top: 80%;
+      }
+      
+      .common_next_button {
+        font-size: 16px;
+        padding: 12px 18px;
+      }
+      
+      .button_icon {
+        width: 18px;
+        height: 18px;
+      }
+      
+      #about_athamkudi_button {
+        font-size: 0.9rem;
+        top: 90%;
+      }
+
+      /* Content elements tablet styles */
+      #content_heading1 {
+        font-size: 2rem;
+        margin-top: 80px;
+        padding: 0 20px;
+      }
+      
+      #content_para1 {
+        font-size: 0.8rem;
+        max-width: 500px;
+        padding: 20px 30px;
+        margin: 40px auto;
+        line-height: 1.7;
+      }
+      
+      #content_image_container {
+        width: 50%; /* Changed from max-width */
+      }
+      #content_image_fig {
+        margin-top: 4px; /* Very small space */
+      }
+
+      #content_para2 {
+        font-size: 0.8rem;
+        max-width: 500px;
+        padding: 20px 30px;
+        margin: 40px auto;
+        line-height: 1.7;
+      }
+
+      .content-divider {
+        width: 60%;
+        margin: 80px auto;
+      }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 1024px) {
+      .scene-container{
+        height: 90vh;
+      }
+      #heading {
+        top: 25%;
+        font-size: 5rem;
+        left: 15%;
+        width: auto;
+      }
+      #heading .vr-span {
+        padding-top: 15px;
+      }
+      
+      #head_image_info {
+        right: 30px;
+        bottom: 0px;
+        display: block;
+      }
+      
+      #intro_controls {
+        top: 50%;
+        left: 15%;
+        width: auto;
+        gap: 25px;
+      }
+      
+      #play_intro {
+        padding: 12px 15px;
+      }
+      
+      #play_intro_image {
+        width: 15px;
+        height: 15px;
+      }
+      
+      #play_intro_text {
+        font-size: 1rem;
+      }
+      
+      .volume_button, #more_button {
+        width: 25px;
+      }
+      
+      #next_buttons {
+        gap: 50px;
+        top: 85%;
+      }
+      
+      .common_next_button {
+        font-size: 18px;
+        padding: 12px 20px;
+        gap: 12px;
+      }
+      
+      .button_icon {
+        width: 20px;
+        height: 20px;
+      }
+      
+      #about_athamkudi_button {
+        font-size: 0.9rem;
+        top: 95%;
+      }
+
+      /* Content elements desktop styles */
+      #content_heading1 {
+        font-size: 2.8rem;
+        margin-top: 100px;
+      }
+      
+      #content_para1 {
+        font-size: 1rem;
+        max-width: 800px;
+      }
+      
+      #content_image_container {
+        width: 30%; /* Changed from max-width */
+      }
+      #content_image_fig {
+        margin-top: 15px; /* Consistent small space */
+      }
+      #content_para2 {
+        font-size: 1rem;
+        max-width: 800px;
+      }
+
+      .content-divider {
+        width: 40%;
+        margin: 100px auto;
+      }
+    }
+
+
+
+    /* loading */
+    .loader {
+      display: inline-flex;
+      gap: 5px;
+    }
+    .loader:before,
+    .loader:after {
+      content: "";
+      width: 25px;
+      aspect-ratio: 1;
+      box-shadow: 0 0 0 3px inset #fff;
+      animation: l4 1.5s infinite;
+    }
+    .loader:after {
+      --s: -1;
+      animation-delay: 0.75s
+    }
+    @keyframes l4 {
+      0%     {transform:scaleX(var(--s,1)) translate(0) rotate(0)}
+      16.67% {transform:scaleX(var(--s,1)) translate(-50%) rotate(0)}
+      33.33% {transform:scaleX(var(--s,1)) translate(-50%) rotate(90deg)}
+      50%,
+      100%   {transform:scaleX(var(--s,1)) translate(0) rotate(90deg)}
+    }
+
+    #loading_screen{
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%,-50%);
     }
-
-    /*loading part*/
-    .loader {
-      width: 50px;
-      aspect-ratio: 1;
-      color: #efb455;
-      position: relative;
-      animation: l40 .5s infinite alternate;
-    }
-    .loader:before,
-    .loader:after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-size: 25px 25px;
-      background-position: 0 0,100% 0,100% 100%,0 100%;
-      background-repeat: no-repeat;
-    }
-    .loader:before {
-      background-image:
-        radial-gradient(farthest-side at top    left ,currentColor 96%,#0000),
-        radial-gradient(farthest-side at top    right,currentColor 96%,#0000),
-        radial-gradient(farthest-side at bottom right,currentColor 96%,#0000),
-        radial-gradient(farthest-side at bottom left ,currentColor 96%,#0000);
-      animation: l40-1 1s infinite;
-    }
-    .loader:after {
-      background-image: 
-        radial-gradient(farthest-side at top    left ,#0000 94%,currentColor 96%),
-        radial-gradient(farthest-side at top    right,#0000 94%,currentColor 96%),
-        radial-gradient(farthest-side at bottom right,#0000 94%,currentColor 96%),
-        radial-gradient(farthest-side at bottom left ,#0000 94%,currentColor 96%);
-      animation: l40-2 1s infinite;
-    }
-    @keyframes l40-1 {
-      0%,10%,90%,100% {inset:0}
-      40%,60% {inset:-10px}
-    }
-    @keyframes l40-2 {
-      0%,40%  {transform: rotate(0)}
-      60%,100%{transform: rotate(90deg)}
-    }
-    
   </style>
 </head>
 <body>
-
-  <div id="loading_container" style="display: none;">
-    <span id="loader_position">
-      <div class="loader"></div> 
-    </span>
-    <p id="loading_name">ATHANGUDI PALACE</p>
-
+  <div id="loading_screen">
+    <div class="loader"></div>
   </div>
-  <div id="main_container" style="position: relative;">
-    <a-scene>
-      <a-sky rotation="0 -90 0"></a-sky>
-        <a-plane
-          id="top"
-          src="./next.png"
-          position="0 -3 -3"
-          width="1"
-          height="1"
-          rotation="-90 90 0"
-          transparent="true"
-          material="opacity: 0.8; transparent: true"></a-plane>
-  
-          <a-plane
-          id="right"
-          src="./next.png"
-          position="1 -3 -2"
-          width="1"
-          height="1"
-          rotation="-90 0 0"
-          transparent="true"
-          material="opacity: 0.8; transparent: true"></a-plane>
-  
-          <a-plane
-          id="left"
-          src="./next.png"
-          position="-1 -3 -2"
-          width="1"
-          height="1"
-          rotation="-90 180 0"
-          transparent="true"
-          material="opacity: 0.8; transparent: true"></a-plane>
-  
-          <a-plane
-          id="bottom"
-          src="./next.png"
-          position="0 -3 -1"
-          width="1"
-          height="1"
-          rotation="-90 -90 0"
-          transparent="true"
-          material="opacity: 0.8; transparent: true"></a-plane>
-  
-          <a-entity position="0 1 -5">
-    
-            <a-circle
-              radius="0.35"
-              color="#ffffff"
-              material="shader: flat; opacity:0.7"
-              
-            ></a-circle>
-        
-            <a-plane
-              src="./images/icons/audio.png"
-              width="0.4"
-              height="0.4"
-              position="0 0 0.01"
-              material="shader: flat"
-              transparent="true"
-            ></a-plane>
-        
-          </a-entity>
-      <a-camera position="0 1 0" cursor="rayOrigin: mouse"></a-camera>
-  
+  <div id="main_container">
+    <div class="scene-container">
+      <p id="head_image_info">Click and Drag to Explore</p>
       
-    </a-scene>
-    <div>
-      <div id="vr_taskbar">
-        <img id="zoom-in" src="./images/icons/plus.png" draggable="false">
-        <img id="zoom-out" src="./images/icons/minus.png" draggable="false">
-        <img id="enter-vr" src="./images/icons/vr.png" draggable="false">
-        <img id="refresh" src="./images/icons/refresh.png" draggable="false">
+      <h1 id="heading">ATHAMGUDI<br>PALACE<span class="vr-span">VR</span></h1>
+      <div id="intro_controls">
+        <button id="play_intro">
+          <img src="./images/icons/play.png" id="play_intro_image" alt="">
+          <h1 id="play_intro_text">Play Intro</h1>
+        </button>
+        <img id="volume_on" class="volume_button" src="./images/icons/volume.png" alt="">
+        <img src="./images/icons/more.png" id="more_button" alt="">
       </div>
     
-      <div id="navigation_bar">
-        <img id="up_arrow" src="./images/icons/arrow.png" alt="">
-        <img id="bottom_arrow" src="./images/icons/arrow.png" alt="">
-        <img id="left_arrow" src="./images/icons/arrow.png" alt="">
-        <img id="right_arrow" src="./images/icons/arrow.png" alt="">
+      <div id="next_buttons">
+        <button id="athamkudi_vr" class="common_next_button">
+          <img src="./images/icons/vr.png" class="button_icon" alt="VR Icon" draggable="false">
+          Athamkudi VR
+        </button>
+        <button id="athamkudi_walkthrough" class="common_next_button">
+          <img src="./images/icons/view.png" class="button_icon" alt="View Icon">
+          Athamkudi View
+        </button>
       </div>
+  
+      <h1 id="about_athamkudi_button"></h1>
+      
+      <div class="scene-overlay"></div>
+      
+      <a-scene embedded vr-mode-ui="enabled: false">
+        <a-camera look-controls="enabled: false"></a-camera>
+        <a-assets>
+          <img id="skyTexture" src="./images/scene/1.png"/>
+          <img id="img1" src="./images/scene/1.png" />
+          <img id="img2" src="./images/scene/2.png" />
+          <img id="img3" src="./images/scene/3.png" />
+          <img id="img4" src="./images/scene/4.png" />
+          <img id="img5" src="./images/scene/5.png" />
+          <img id="img6" src="./images/scene/6.png" />
+          <img id="img7" src="./images/scene/7.png" />
+          <img id="img8" src="./images/scene/8.png" />
+          <img id="img9" src="./images/scene/9.png" />
+          <img id="img10" src="./images/scene/10.png" />
+        </a-assets>
+        <a-sky
+          id="head_image"
+          src="#skyTexture"
+          rotation="0 0 0"
+          animation="property: rotation; to: 0 -360 0; dur: 70000; easing: linear; loop: true"
+        ></a-sky>
+      </a-scene>
     </div>
-  </div>
-
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-      //main
-      const sky = document.querySelector("a-sky");
-
-      //buttons
-      const left = document.getElementById("left");
-      const right = document.getElementById("right");
-      const top = document.getElementById("top");
-      const bottom = document.getElementById("bottom");
-
-      const left_arrow = document.getElementById('left_arrow');
-      const right_arrow = document.getElementById('right_arrow');
-      const up_arrow = document.getElementById('up_arrow');
-      const bottom_arrow = document.getElementById('bottom_arrow');
-
-      var left_arrow_value = right_arrow_value = up_arrow_value = bottom_arrow_value = 0;
-      var left_value = right_value = top_value = bottom_value = 0;
-      var left_location = right_location = top_location = bottom_location = '';
-
-    
-      
-      function update_images() {
-          left.setAttribute('visible', left_value !== 0);
-          right.setAttribute('visible', right_value !== 0);
-          top.setAttribute('visible', top_value !== 0);
-          bottom.setAttribute('visible', bottom_value !== 0);
-
-          function toggleArrowDisplay(arrow, value) {
-            arrow.style.display = value === 0 ? 'none' : 'block';
-          }
-          
-          toggleArrowDisplay(left_arrow, left_arrow_value);
-          toggleArrowDisplay(right_arrow, right_arrow_value);
-          toggleArrowDisplay(up_arrow, up_arrow_value);
-          toggleArrowDisplay(bottom_arrow, bottom_arrow_value);
-      }
-      
-      const functions = {
-         scene1: function(){
-            sky.setAttribute('src','./images/scene/1.png')
-            left_arrow_value = right_arrow_value = bottom_arrow_value = bottom_value = right_value = left_value = 0;
-            up_arrow_value = top_value=1;
-            top_location='scene2';
-            left_location = right_location = bottom_location = '';
-            update_images();
-        },
+    <div class="vignette-overlay"></div>
   
-          scene2 : function(){
-            sky.setAttribute('src','./images/scene/2.png');
-            up_arrow_value =  bottom_arrow_value = top_value =  bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value =  left_value = 0;
-            top_location='scene3';
-            left_location = right_location = '';
-            bottom_location = 'scene1';
-            update_images();
-        },
-
-          scene3 : function(){
-            sky.setAttribute('src','./images/scene/3.png');
-            up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value = left_value = 0;
-            top_location='scene4';
-            left_location = right_location= '';
-            bottom_location = 'scene2';
-            update_images();
-          },
-
-
-          scene4 : function (){
-            sky.setAttribute('src','./images/scene/4.png');
-            up_arrow_value = bottom_arrow_value = right_arrow_value = left_arrow_value = top_value = bottom_value = right_value = bottom_value = left_value = 1;
-            top_location = 'scene8';
-            left_location = 'scene6';
-            right_location = 'scene5';
-            bottom_location = 'scene3';
-            update_images();
-          },  
-          
-          
-          scene5 : function(){
-            sky.setAttribute('src','./images/scene/5.png');
-            left_arrow_value = left_value = 1;
-            up_arrow_value = bottom_arrow_value = right_arrow_value = top_value = bottom_value = right_value = 0;
-            top_location = right_location = bottom_location = '';
-            left_location = 'scene4';
-            update_images();
-          },
-
-          scene6 : function(){
-            sky.setAttribute('src','./images/scene/6.png');
-            right_arrow_value = right_value = 1;
-            top_value = bottom_value = left_value = up_arrow_value = bottom_arrow_value = left_arrow_value = 0 ;
-            top_location = left_location = bottom_location = '';
-            right_location = 'scene4';
-            update_images();
-          },
-
-          scene8 : function(){
-            sky.setAttribute('src','./images/scene/8.png');
-            up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 1;
-            right_value = right_arrow_value = 0;
-            top_location = 'scene9';
-            left_location = 'scene7';
-            right_location = '';
-            bottom_location = 'scene4';
-            update_images();
-          }, 
-
-          scene7 : function(){
-            sky.setAttribute('src','./images/scene/7.png');
-            up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 0;
-            right_value = right_arrow_value = 1;
-            top_location = left_location = bottom_location = '';
-            right_location = 'scene8';
-            update_images();
-          },
-
-          scene9 : function(){
-            sky.setAttribute('src','./images/scene/9.png');
-            up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value = left_value = 0;
-            top_location = 'scene10';
-            left_location = right_location = '';
-            bottom_location = 'scene8';
-            update_images();
-          },
-
-          scene10 : function(){
-            sky.setAttribute('src','./images/scene/10.png');
-            top_value = right_value = left_value = up_arrow_value = left_arrow_value = right_arrow_value = 0 ;
-            bottom_value , bottom_arrow_value = 1;
-            top_location = left_location = right_location = '';
-            bottom_location = 'scene9';
-            update_images();
-          }
-          
-      }
-        
-      functions.scene1(); // default scene
+  
+    <h1 id="content_heading1">Discover the Legacy of Athamkudi</h1>
+    <p id="content_para1">Nestled in the heart of Chettinad, Athamkudi is a village steeped in history, culture, and timeless beauty. Famous for its traditional Chettinad architecture, this village is home to some of the most exquisite mansions ever built by the Chettiar community renowned merchants and patrons of art and architecture. At the center of Athamkudi's charm lies the Athamkudi Palace, a stunning heritage home that stands as a testament to the craftsmanship of a bygone era. From intricately carved wooden doors to colorful handmade Athangudi tiles, every element of the palace tells a story of elegance, pride, and tradition.</p>
+    <div id="content_image_container" style="text-align: center;">
+      <img src="./images/scene/content_image.png" id="content_image" alt="">
+      <p id="content_image_fig">Fig 1.1 Wood Carvings</p>
+    </div>
+    <p id="content_para2">Experience the grandeur of Athamkudi Palace in two unique ways.
+      The Walkthrough is a web-based journey, similar to Google Street View, enriched with visuals and audio that reveal the palace’s rich heritage.
+      The VR Experience offers a fully immersive tour through a headset, bringing the sights and sounds of the palace to life in 360°.</p>
+      <div id="content_divider" class="content-divider"></div>  
+  </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sky = document.querySelector('#head_image');
+      const scene = document.querySelector('a-scene');
+      const images = ['#img1', '#img2', '#img3', '#img4', '#img5', 
+                     '#img6', '#img7', '#img8', '#img9', '#img10'];
       
+      let currentImageIndex = 0;
+      
+      function getRandomImageIndex() {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * images.length);
+        } while (newIndex === currentImageIndex && images.length > 1);
+        return newIndex;
+      }
+      
+      function changeSkyImage() {
+        scene.classList.add('fade-out');
+        
+        setTimeout(() => {
+          currentImageIndex = getRandomImageIndex();
+          sky.setAttribute('src', images[currentImageIndex]);
+          
+          scene.classList.remove('fade-out');
+          scene.classList.add('fade-in');
+          
+          setTimeout(() => {
+            scene.classList.remove('fade-in');
+          }, 500);
+          
+        }, 500);
+      }
+      
+      setInterval(changeSkyImage, 8000);
+    });
+  </script>
+  <script>
+    const descriptions = {
+      athamkudi_vr: "Enter VR Experience of Athamkudi Palace",
+      athamkudi_walkthrough: "Explore Athamkudi Palace in a 360° Walkthrough"
+    };
+  
+    Object.entries(descriptions).forEach(([id, text]) => {
+      const btn = document.getElementById(id);
+      btn.addEventListener('mouseenter', () => {
+        document.getElementById('about_athamkudi_button').innerHTML = text;
+      });
+      btn.addEventListener('mouseleave', () => {
+        document.getElementById('about_athamkudi_button').innerHTML = "";
+      });
+    });
+  </script>
+  <script>
+    if (!AFRAME.utils.device.isMobile() && !AFRAME.utils.device.isTablet()) {
+      document.querySelector('a-camera').setAttribute('look-controls', 'enabled', true);
+    }    
 
-      function handleDirectionClick(location) {
-        const sceneName = location();
-        if (functions[sceneName]) {
-          functions[sceneName]();
-        } else {
-          console.warn("No function found for:", sceneName);
+    const heading = document.querySelector('#content_heading1');
+    const options = {
+      root: null, 
+      rootMargin: '0px',
+      threshold: 0.5 
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = 1;
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target); 
+        }
+      });
+    }, options);
+
+    observer.observe(heading);
+  </script>
+  <script>
+    const fadeInOnScroll = (elementId) => {
+      const element = document.getElementById(elementId);
+      const rect = element.getBoundingClientRect();
+      if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+        element.classList.add('visible');
+      }
+    };
+    
+    // Trigger fade-in animation for paragraph, image, and caption
+    const onScroll = () => {
+      fadeInOnScroll('content_para1');
+      fadeInOnScroll('content_image');
+      fadeInOnScroll('content_image_fig');
+      fadeInOnScroll('content_para2');
+      fadeInOnScroll('content_divider'); // Changed from content-divider to content_divider
+    };
+    
+    window.addEventListener('scroll', onScroll);
+    window.addEventListener('load', onScroll);
+  </script>
+  <script>
+    // Wait for the DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all images in the document
+      const images = document.querySelectorAll('img');
+      const totalImages = images.length;
+      let loadedImages = 0;
+      
+      // Check if all images are already loaded (cached case)
+      let allLoaded = true;
+      images.forEach(img => {
+        if (!img.complete) {
+          allLoaded = false;
+        }
+      });
+      
+      if (allLoaded) {
+        // All images were cached and already loaded
+        showMainContent();
+        return;
+      }
+      
+      // Set up load event listeners for each image
+      images.forEach(img => {
+        img.addEventListener('load', imageLoaded);
+        img.addEventListener('error', imageLoaded); // Also count if image fails to load
+      });
+      
+      function imageLoaded() {
+        loadedImages++;
+        // When all images are loaded (or errored), show the main content
+        if (loadedImages === totalImages) {
+          showMainContent();
         }
       }
-      const addClick = (el, loc) => el.addEventListener('click', () => handleDirectionClick(() => loc));
-
-      top.addEventListener('click', () => handleDirectionClick(() => top_location));
-      left.addEventListener('click', () => handleDirectionClick(() => left_location));
-      right.addEventListener('click', () => handleDirectionClick(() => right_location));
-      bottom.addEventListener('click', () => handleDirectionClick(() => bottom_location));
-
-      up_arrow.addEventListener('click',() => handleDirectionClick(() => top_location));
-      bottom_arrow.addEventListener('click',() => handleDirectionClick(() => bottom_location));
-      left_arrow.addEventListener('click',() => handleDirectionClick(() => left_location));
-      right_arrow.addEventListener('click',() => handleDirectionClick(() => right_location));
       
+      function showMainContent() {
+        // Hide loading screen
+        const loadingScreen = document.getElementById('loading_screen');
+        loadingScreen.style.display = 'none';
+        
+        // Show main container
+        const mainContainer = document.getElementById('main_container');
+        mainContainer.style.display = 'block';
+        
+        // Trigger any animations that depend on the content being visible
+        window.dispatchEvent(new Event('load'));
+      }
+      
+      // Set a timeout as a fallback in case some images don't load
+      const loadTimeout = setTimeout(() => {
+        showMainContent();
+      }, 5000); // 5 second timeout as fallback
     });
-
-    const camera = document.querySelector("a-camera");
-
-    document.getElementById("zoom-in").addEventListener("click", () => {
-      let fov = camera.getAttribute("camera").fov;
-      if (fov > 20) camera.setAttribute("camera", "fov", fov - 5);
-    });
-
-    document.getElementById("zoom-out").addEventListener("click", () => {
-      let fov = camera.getAttribute("camera").fov;
-      if (fov < 100) camera.setAttribute("camera", "fov", fov + 5);
-    });
-
-    document.getElementById("enter-vr").addEventListener("click", () => {
-      document.querySelector("a-scene").enterVR();
-    });
-
-    document.getElementById("refresh").addEventListener("click", () => {
-      location.reload();
-    });
-
   </script>
 </body>
 </html>
