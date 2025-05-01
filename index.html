@@ -781,40 +781,79 @@
   <script>
     // Wait for the DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
-      // Get all images in the document
-      const images = document.querySelectorAll('img');
-      const totalImages = images.length;
-      let loadedImages = 0;
+      // Get all images in the document (including A-Frame assets)
+      const allImages = document.querySelectorAll('img');
+      const aFrameAssets = document.querySelectorAll('a-assets img');
+      const regularImages = [];
       
-      // Check if all images are already loaded (cached case)
-      let allLoaded = true;
-      images.forEach(img => {
-        if (!img.complete) {
-          allLoaded = false;
+      // Separate regular images from A-Frame assets
+      allImages.forEach(img => {
+        if (!img.closest('a-assets')) {
+          regularImages.push(img);
         }
       });
       
-      if (allLoaded) {
-        // All images were cached and already loaded
-        showMainContent();
-        return;
-      }
+      const totalRegularImages = regularImages.length;
+      const totalAFrameAssets = aFrameAssets.length;
+      let loadedRegularImages = 0;
+      let loadedAFrameAssets = 0;
       
-      // Set up load event listeners for each image
-      images.forEach(img => {
-        img.addEventListener('load', imageLoaded);
-        img.addEventListener('error', imageLoaded); // Also count if image fails to load
-      });
-      
-      function imageLoaded() {
-        loadedImages++;
-        // When all images are loaded (or errored), show the main content
-        if (loadedImages === totalImages) {
+      // Function to check if everything is loaded
+      function checkAllLoaded() {
+        if (loadedRegularImages === totalRegularImages && loadedAFrameAssets === totalAFrameAssets) {
           showMainContent();
         }
       }
       
+      // Check if regular images are already loaded (cached)
+      regularImages.forEach(img => {
+        if (img.complete) {
+          loadedRegularImages++;
+        } else {
+          img.addEventListener('load', () => {
+            loadedRegularImages++;
+            checkAllLoaded();
+          });
+          img.addEventListener('error', () => {
+            loadedRegularImages++; // Count even if error occurs
+            checkAllLoaded();
+          });
+        }
+      });
+      
+      // Check if A-Frame assets are already loaded (cached)
+      aFrameAssets.forEach(asset => {
+        if (asset.complete) {
+          loadedAFrameAssets++;
+        } else {
+          asset.addEventListener('load', () => {
+            loadedAFrameAssets++;
+            checkAllLoaded();
+          });
+          asset.addEventListener('error', () => {
+            loadedAFrameAssets++; // Count even if error occurs
+            checkAllLoaded();
+          });
+        }
+      });
+      
+      // Also wait for A-Frame scene to be fully initialized
+      const aScene = document.querySelector('a-scene');
+      if (aScene.hasLoaded) {
+        // Scene is already loaded
+        checkAllLoaded();
+      } else {
+        aScene.addEventListener('loaded', checkAllLoaded);
+      }
+      
+      // Set a timeout as a fallback in case some resources don't load
+      const loadTimeout = setTimeout(() => {
+        showMainContent();
+      }, 8000); // 8 second timeout as fallback
+      
       function showMainContent() {
+        clearTimeout(loadTimeout); // Clear the fallback timeout
+        
         // Hide loading screen
         const loadingScreen = document.getElementById('loading_screen');
         loadingScreen.style.display = 'none';
@@ -827,10 +866,8 @@
         window.dispatchEvent(new Event('load'));
       }
       
-      // Set a timeout as a fallback in case some images don't load
-      const loadTimeout = setTimeout(() => {
-        showMainContent();
-      }, 5000); // 5 second timeout as fallback
+      // Initial check in case everything was cached
+      checkAllLoaded();
     });
   </script>
 </body>
