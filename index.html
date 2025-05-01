@@ -10,7 +10,7 @@
 
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <style>
-    * { 
+    * {
       user-select: none; 
     }
     body {
@@ -210,7 +210,6 @@
       text-align: center;
     }
 
-    
     /* Default mobile styles for content elements */
     #content_heading1 {
       font-family: 'Chakra Petch', sans-serif;
@@ -646,7 +645,7 @@
       <a-scene embedded vr-mode-ui="enabled: false">
         <a-camera look-controls="enabled: false"></a-camera>
         <a-assets>
-          <img id="skyTexture" src="./images/scene/1.png" crossorigin="anonymous" />
+          <img id="skyTexture" src="./images/scene/1.png"/>
           <img id="img1" src="./images/scene/1.png" />
           <img id="img2" src="./images/scene/2.png" />
           <img id="img3" src="./images/scene/3.png" />
@@ -780,59 +779,208 @@
     window.addEventListener('load', onScroll);
   </script>
   <script>
+    // Enhanced preloader with caching support
     document.addEventListener('DOMContentLoaded', function() {
-      const images = document.querySelectorAll('img');
-      const totalImages = images.length;
-      let loadedImages = 0;
-      
-      let allLoaded = true;
-      images.forEach(img => {
-        if (!img.complete) {
-          allLoaded = false;
-        }
-      });
-      
-      if (allLoaded) {
-        showMainContent();
-        return;
-      }
-      
-      images.forEach(img => {
-        img.addEventListener('load', imageLoaded);
-        img.addEventListener('error', imageLoaded);
-      });
-      
-      function imageLoaded() {
-        loadedImages++;
-        if (loadedImages === totalImages) {
-          showMainContent();
-        }
-      }
-      
-      function showMainContent() {
-        const loadingScreen = document.getElementById('loading_screen');
-        loadingScreen.style.display = 'none';
-        
-        const mainContainer = document.getElementById('main_container');
-        mainContainer.style.display = 'block';
-        
-        window.dispatchEvent(new Event('load'));
-      }
-      
-      const loadTimeout = setTimeout(() => {
-        showMainContent();
-      }, 5000); 
-    });
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const scene = document.querySelector('a-scene');
-      const loaderScreen = document.getElementById('custom-loading-screen');
+      const loadingScreen = document.getElementById('loading_screen');
       const mainContainer = document.getElementById('main_container');
-  
-      scene.addEventListener('loaded', () => {
-        loaderScreen.style.display = 'none';
-        mainContainer.style.display = 'block';
+      const aScene = document.querySelector('a-scene');
+      
+      // Add progress text
+      const progressText = document.createElement('div');
+      progressText.style.position = 'absolute';
+      progressText.style.bottom = '20px';
+      progressText.style.width = '100%';
+      progressText.style.textAlign = 'center';
+      progressText.style.color = 'white';
+      progressText.style.fontFamily = "'Chakra Petch', sans-serif";
+      progressText.style.fontSize = '14px';
+      loadingScreen.appendChild(progressText);
+      
+      // 1. CACHING SYSTEM
+      const CACHE_KEY = 'athamkudi-assets-cache';
+      const CACHE_VERSION = 'v1';
+      const shouldCache = true; // Set to false to disable caching
+      
+      async function cacheAssets() {
+        if (!shouldCache || !('caches' in window)) return;
+        
+        try {
+          const cache = await caches.open(`${CACHE_KEY}-${CACHE_VERSION}`);
+          const assets = [
+            // List all your assets here
+            './images/icons/play.png',
+            './images/icons/volume.png',
+            './images/icons/more.png',
+            './images/icons/vr.png',
+            './images/icons/view.png',
+            './images/scene/1.png',
+            './images/scene/2.png',
+            './images/scene/3.png',
+            './images/scene/4.png',
+            './images/scene/5.png',
+            './images/scene/6.png',
+            './images/scene/7.png',
+            './images/scene/8.png',
+            './images/scene/9.png',
+            './images/scene/10.png',
+            './images/scene/content_image.png'
+          ];
+          
+          await cache.addAll(assets);
+          console.log('Assets cached successfully');
+        } catch (err) {
+          console.warn('Caching failed:', err);
+        }
+      }
+      
+      // 2. ASSET LOADING SYSTEM
+      let totalAssets = 0;
+      let loadedAssets = 0;
+      
+      function updateProgress() {
+        progressText.textContent = `Loading ${loadedAssets}/${totalAssets} assets...`;
+      }
+      
+      function trackAssetLoading(img) {
+        totalAssets++;
+        updateProgress();
+        
+        return new Promise((resolve) => {
+          if (img.complete) {
+            loadedAssets++;
+            updateProgress();
+            resolve();
+          } else {
+            img.addEventListener('load', () => {
+              loadedAssets++;
+              updateProgress();
+              resolve();
+            });
+            img.addEventListener('error', () => {
+              loadedAssets++;
+              updateProgress();
+              resolve(); // Continue even if some fail
+            });
+          }
+        });
+      }
+      
+      // 3. A-FRAME TEXTURE LOADING TRACKER
+      AFRAME.registerComponent('texture-tracker', {
+        init: function() {
+          this.system = this.el.sceneEl.systems['texture-tracker'] = {
+            texturesLoading: 0,
+            update: () => {
+              if (this.system.texturesLoading === 0) {
+                checkAllLoaded();
+              }
+            }
+          };
+        }
+      });
+      
+      // Patch Three.js texture loader
+      const originalLoad = THREE.TextureLoader.prototype.load;
+      THREE.TextureLoader.prototype.load = function(url, onLoad, onProgress, onError) {
+        const sceneEl = document.querySelector('a-scene');
+        const tracker = sceneEl?.systems['texture-tracker'];
+        
+        if (tracker) {
+          tracker.texturesLoading++;
+          totalAssets++;
+          updateProgress();
+        }
+        
+        const wrappedOnLoad = (texture) => {
+          if (tracker) {
+            tracker.texturesLoading--;
+            loadedAssets++;
+            updateProgress();
+            tracker.update();
+          }
+          if (onLoad) onLoad(texture);
+        };
+        
+        const wrappedOnError = (error) => {
+          if (tracker) {
+            tracker.texturesLoading--;
+            loadedAssets++;
+            updateProgress();
+            tracker.update();
+          }
+          if (onError) onError(error);
+        };
+        
+        return originalLoad.call(this, url, wrappedOnLoad, onProgress, wrappedOnError);
+      };
+      
+      // 4. MAIN LOADING PROCESS
+      async function loadEverything() {
+        // Start caching (in background)
+        cacheAssets();
+        
+        // Track regular images
+        const allImages = Array.from(document.querySelectorAll('img'));
+        const imagePromises = allImages.map(trackAssetLoading);
+        
+        // Wait for images and A-Frame scene
+        await Promise.all(imagePromises);
+        
+        // Wait for A-Frame scene to load
+        if (!aScene.hasLoaded) {
+          await new Promise(resolve => {
+            aScene.addEventListener('loaded', resolve);
+          });
+        }
+        
+        // Extra check for textures
+        const tracker = aScene.systems['texture-tracker'];
+        if (tracker && tracker.texturesLoading > 0) {
+          await new Promise(resolve => {
+            const check = setInterval(() => {
+              if (tracker.texturesLoading === 0) {
+                clearInterval(check);
+                resolve();
+              }
+            }, 100);
+          });
+        }
+      }
+      
+      // 5. COMPLETION HANDLER
+      function checkAllLoaded() {
+        // All assets loaded and textures ready
+        if (loadedAssets >= totalAssets) {
+          showContent();
+        }
+      }
+      
+      function showContent() {
+        // Hide loading screen with fade
+        loadingScreen.style.transition = 'opacity 0.5s ease';
+        loadingScreen.style.opacity = '0';
+        
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          mainContainer.style.display = 'block';
+          
+          // Ensure smooth appearance
+          setTimeout(() => {
+            window.dispatchEvent(new Event('load'));
+          }, 100);
+        }, 500);
+      }
+      
+      // 6. FALLBACK TIMEOUT (15 seconds)
+      const loadTimeout = setTimeout(() => {
+        console.warn('Loading timeout - showing content anyway');
+        showContent();
+      }, 15000);
+      
+      // Start loading process
+      loadEverything().then(checkAllLoaded).catch(err => {
+        console.error('Loading failed:', err);
+        showContent();
       });
     });
   </script>
