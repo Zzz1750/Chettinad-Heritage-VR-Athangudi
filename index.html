@@ -645,7 +645,7 @@
       <a-scene embedded vr-mode-ui="enabled: false">
         <a-camera look-controls="enabled: false"></a-camera>
         <a-assets>
-          <img id="skyTexture" src="./images/scene/1.png"/>
+          <img id="skyTexture" src="./images/scene/1.png" crossorigin="anonymous" />
           <img id="img1" src="./images/scene/1.png" />
           <img id="img2" src="./images/scene/2.png" />
           <img id="img3" src="./images/scene/3.png" />
@@ -779,198 +779,62 @@
     window.addEventListener('load', onScroll);
   </script>
   <script>
-    // Ultimate A-Frame preloader with texture verification
     document.addEventListener('DOMContentLoaded', function() {
-      // 1. SETUP LOADING TRACKERS
-      const loadingScreen = document.getElementById('loading_screen');
-      const mainContainer = document.getElementById('main_container');
-      const aScene = document.querySelector('a-scene');
+      const images = document.querySelectorAll('img');
+      const totalImages = images.length;
+      let loadedImages = 0;
       
-      // Create loading progress element if it doesn't exist
-      const progressEl = document.createElement('div');
-      progressEl.style.position = 'absolute';
-      progressEl.style.bottom = '20px';
-      progressEl.style.width = '80%';
-      progressEl.style.left = '10%';
-      progressEl.style.textAlign = 'center';
-      progressEl.style.color = 'white';
-      progressEl.style.fontFamily = "'Chakra Petch', sans-serif";
-      loadingScreen.appendChild(progressEl);
-  
-      // 2. TEXTURE LOADING TRACKER (for Three.js)
-      AFRAME.registerComponent('texture-tracker', {
-        init: function() {
-          this.system = this.el.sceneEl.systems['texture-tracker'] = {
-            texturesLoading: 0,
-            texturesFailed: 0,
-            updateProgress: updateLoadingProgress
-          };
-        }
-      });
-  
-      // Patch Three.js texture loader
-      const originalLoad = THREE.TextureLoader.prototype.load;
-      THREE.TextureLoader.prototype.load = function(url, onLoad, onProgress, onError) {
-        const sceneEl = document.querySelector('a-scene');
-        const tracker = sceneEl?.systems['texture-tracker'];
-        
-        if (tracker) {
-          tracker.texturesLoading++;
-          tracker.updateProgress();
-        }
-  
-        const wrappedOnLoad = (texture) => {
-          if (tracker) {
-            tracker.texturesLoading--;
-            tracker.updateProgress();
-            checkAllLoaded();
-          }
-          if (onLoad) onLoad(texture);
-        };
-  
-        const wrappedOnError = (error) => {
-          if (tracker) {
-            tracker.texturesLoading--;
-            tracker.texturesFailed++;
-            tracker.updateProgress();
-            checkAllLoaded();
-          }
-          if (onError) onError(error);
-        };
-  
-        return originalLoad.call(this, url, wrappedOnLoad, onProgress, wrappedOnError);
-      };
-  
-      // 3. TRACK ALL RESOURCES
-      const allResources = {
-        images: Array.from(document.querySelectorAll('img')),
-        sceneReady: false,
-        texturesReady: false,
-        get allLoaded() {
-          return this.images.every(img => img.complete) && 
-                 this.sceneReady && 
-                 this.texturesReady;
-        }
-      };
-  
-      // 4. LOADING PROGRESS UPDATER
-      function updateLoadingProgress() {
-        const tracker = aScene?.systems['texture-tracker'];
-        const loadedImages = allResources.images.filter(img => img.complete).length;
-        const totalImages = allResources.images.length;
-        const loadingTextures = tracker?.texturesLoading || 0;
-        
-        let progressText = `Loading: Images ${loadedImages}/${totalImages}`;
-        if (tracker) {
-          progressText += ` | Textures ${tracker.texturesLoading} remaining`;
-          if (tracker.texturesFailed > 0) {
-            progressText += ` (${tracker.texturesFailed} failed)`;
-          }
-        }
-        
-        progressEl.textContent = progressText;
-      }
-  
-      // 5. RESOURCE LOADING HANDLERS
-      allResources.images.forEach(img => {
+      let allLoaded = true;
+      images.forEach(img => {
         if (!img.complete) {
-          img.addEventListener('load', () => {
-            updateLoadingProgress();
-            checkAllLoaded();
-          });
-          img.addEventListener('error', () => {
-            updateLoadingProgress();
-            checkAllLoaded();
-          });
+          allLoaded = false;
         }
       });
-  
-      // 6. A-FRAME SCENE HANDLER
-      if (aScene.hasLoaded) {
-        allResources.sceneReady = true;
-        verifyTextures();
-      } else {
-        aScene.addEventListener('loaded', () => {
-          allResources.sceneReady = true;
-          verifyTextures();
-        });
+      
+      if (allLoaded) {
+        showMainContent();
+        return;
       }
-  
-      // 7. TEXTURE VERIFICATION
-      function verifyTextures() {
-        const tracker = aScene.systems['texture-tracker'];
-        if (!tracker) {
-          console.warn('Texture tracker not found');
-          allResources.texturesReady = true;
-          checkAllLoaded();
-          return;
-        }
-  
-        // Initial check
-        if (tracker.texturesLoading === 0) {
-          allResources.texturesReady = true;
-          checkAllLoaded();
-        }
-        
-        // Periodic verification (every 500ms)
-        const textureCheckInterval = setInterval(() => {
-          if (tracker.texturesLoading === 0) {
-            clearInterval(textureCheckInterval);
-            allResources.texturesReady = true;
-            checkAllLoaded();
-          }
-        }, 500);
-      }
-  
-      // 8. FINAL CHECK AND DISPLAY
-      function checkAllLoaded() {
-        updateLoadingProgress();
-        
-        if (allResources.allLoaded) {
+      
+      images.forEach(img => {
+        img.addEventListener('load', imageLoaded);
+        img.addEventListener('error', imageLoaded);
+      });
+      
+      function imageLoaded() {
+        loadedImages++;
+        if (loadedImages === totalImages) {
           showMainContent();
         }
       }
-  
-      // 9. FALLBACK SYSTEM
-      const loadTimeout = setTimeout(() => {
-        console.warn('Loading timeout reached - attempting graceful fallback');
-        
-        // Force mark textures as ready if we have to
-        const tracker = aScene.systems['texture-tracker'];
-        if (tracker && tracker.texturesLoading > 0) {
-          console.warn(`Forcing ${tracker.texturesLoading} textures to complete`);
-          tracker.texturesLoading = 0;
-          allResources.texturesReady = true;
-        }
-        
-        showMainContent();
-      }, 15000); // 15 second timeout
-  
-      // 10. SHOW FINAL CONTENT
+      
       function showMainContent() {
-        clearTimeout(loadTimeout);
+        const loadingScreen = document.getElementById('loading_screen');
+        loadingScreen.style.display = 'none';
         
-        // Hide loading screen with fade
-        loadingScreen.style.transition = 'opacity 0.5s ease';
-        loadingScreen.style.opacity = '0';
+        const mainContainer = document.getElementById('main_container');
+        mainContainer.style.display = 'block';
         
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-          mainContainer.style.display = 'block';
-          
-          // Ensure A-Frame scene is visible
-          aScene.style.opacity = '1';
-          aScene.style.visibility = 'visible';
-          
-          // Trigger any animations
-          window.dispatchEvent(new Event('load'));
-        }, 500);
+        window.dispatchEvent(new Event('load'));
       }
-  
-      // Initial check
-      updateLoadingProgress();
-      checkAllLoaded();
+      
+      const loadTimeout = setTimeout(() => {
+        showMainContent();
+      }, 5000); 
     });
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const scene = document.querySelector('a-scene');
+      const loaderScreen = document.getElementById('custom-loading-screen');
+      const mainContainer = document.getElementById('main_container');
+  
+      scene.addEventListener('loaded', () => {
+        loaderScreen.style.display = 'none';
+        mainContainer.style.display = 'block';
+      });
+    });
+  </script>
+  
 </body>
 </html>
