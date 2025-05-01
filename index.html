@@ -779,81 +779,122 @@
     window.addEventListener('load', onScroll);
   </script>
   <script>
-    // Enhanced loading system for A-Frame
+    // Wait for DOM and A-Frame to be ready
     document.addEventListener('DOMContentLoaded', function() {
+      // First ensure A-Frame is fully loaded
+      if (typeof AFRAME === 'undefined') {
+        console.error('A-Frame not loaded!');
+        return;
+      }
+  
+      // Create a custom component to track texture loading
+      AFRAME.registerComponent('texture-loader', {
+        init: function() {
+          this.system = this.el.sceneEl.systems['texture-loader'] = 
+            this.el.sceneEl.systems['texture-loader'] || { texturesLoading: 0 };
+        }
+      });
+  
+      // Patch THREE.TextureLoader to track loading
+      const originalLoad = THREE.TextureLoader.prototype.load;
+      THREE.TextureLoader.prototype.load = function(url, onLoad, onProgress, onError) {
+        const sceneEl = document.querySelector('a-scene');
+        if (sceneEl && sceneEl.systems['texture-loader']) {
+          sceneEl.systems['texture-loader'].texturesLoading++;
+        }
+  
+        const wrappedOnLoad = (texture) => {
+          if (sceneEl && sceneEl.systems['texture-loader']) {
+            sceneEl.systems['texture-loader'].texturesLoading--;
+            checkAllTexturesLoaded();
+          }
+          if (onLoad) onLoad(texture);
+        };
+  
+        return originalLoad.call(this, url, wrappedOnLoad, onProgress, onError);
+      };
+  
       // Get all elements that need to load
       const allImages = Array.from(document.querySelectorAll('img'));
-      const aFrameAssets = Array.from(document.querySelectorAll('a-assets img'));
       const aScene = document.querySelector('a-scene');
       
-      // Filter out A-Frame assets from regular images
-      const regularImages = allImages.filter(img => !aFrameAssets.includes(img));
-      
       // Track loading progress
-      let resourcesLoaded = 0;
-      const totalResources = regularImages.length + aFrameAssets.length + 1; // +1 for a-scene
+      let imagesLoaded = 0;
+      let aframeReady = false;
+      let texturesReady = false;
       
-      // Check if resources are already loaded
-      function checkResource(resource) {
-        if (resource.complete || (resource.tagName === 'A-SCENE' && resource.hasLoaded)) {
-          resourcesLoaded++;
+      // Check if all textures are loaded
+      function checkAllTexturesLoaded() {
+        const system = aScene.systems['texture-loader'];
+        if (system && system.texturesLoading === 0) {
+          texturesReady = true;
           checkAllLoaded();
-        } else {
-          if (resource.tagName === 'IMG') {
-            resource.addEventListener('load', resourceLoaded);
-            resource.addEventListener('error', resourceLoaded);
-          } else if (resource.tagName === 'A-SCENE') {
-            resource.addEventListener('loaded', resourceLoaded);
-          }
         }
       }
       
-      function resourceLoaded() {
-        resourcesLoaded++;
-        checkAllLoaded();
-      }
-      
+      // Check if everything is loaded
       function checkAllLoaded() {
-        if (resourcesLoaded === totalResources) {
+        if (imagesLoaded === allImages.length && aframeReady && texturesReady) {
           showMainContent();
         }
       }
       
-      // Start checking all resources
-      regularImages.forEach(checkResource);
-      aFrameAssets.forEach(checkResource);
-      checkResource(aScene);
+      // Check regular images
+      allImages.forEach(img => {
+        if (img.complete) {
+          imagesLoaded++;
+        } else {
+          img.addEventListener('load', () => {
+            imagesLoaded++;
+            checkAllLoaded();
+          });
+          img.addEventListener('error', () => {
+            imagesLoaded++; // Count errors too
+            checkAllLoaded();
+          });
+        }
+      });
       
-      // Fallback timeout (10 seconds)
+      // Wait for A-Frame scene to be ready
+      if (aScene.hasLoaded) {
+        aframeReady = true;
+        // Need to check textures immediately if scene is already loaded
+        setTimeout(checkAllTexturesLoaded, 100);
+      } else {
+        aScene.addEventListener('loaded', () => {
+          aframeReady = true;
+          // Check textures after a short delay to allow registration
+          setTimeout(checkAllTexturesLoaded, 100);
+        });
+      }
+      
+      // Fallback timeout (12 seconds)
       const loadTimeout = setTimeout(() => {
         console.warn('Loading timeout reached - showing content anyway');
         showMainContent();
-      }, 10000);
+      }, 12000);
       
       function showMainContent() {
         clearTimeout(loadTimeout);
         
-        // Hide loading screen
+        // Hide loading screen with fade
         const loadingScreen = document.getElementById('loading_screen');
-        loadingScreen.style.opacity = '0';
         loadingScreen.style.transition = 'opacity 0.5s ease';
+        loadingScreen.style.opacity = '0';
         
-        // After fade out completes, hide it completely
+        // After fade out completes
         setTimeout(() => {
           loadingScreen.style.display = 'none';
           
-          // Show main container with fade in
+          // Show main container
           const mainContainer = document.getElementById('main_container');
           mainContainer.style.display = 'block';
-          mainContainer.style.opacity = '0';
           
-          // Force reflow to enable transition
-          void mainContainer.offsetWidth;
+          // Ensure A-Frame scene is visible
+          aScene.style.opacity = '1';
+          aScene.style.visibility = 'visible';
           
-          mainContainer.style.transition = 'opacity 0.5s ease';
-          mainContainer.style.opacity = '1';
-          
-          // Trigger any animations that depend on the content being visible
+          // Trigger any animations
           window.dispatchEvent(new Event('load'));
         }, 500);
       }
