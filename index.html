@@ -213,7 +213,7 @@
     /* Default mobile styles for content elements */
     #content_heading1 {
       font-family: 'Chakra Petch', sans-serif;
-      font-size: 1rem;
+      font-size: 1.5rem;
       text-align: center;
       color: #ffffff;
       margin-top: 60px;
@@ -622,9 +622,11 @@
         <button id="play_intro">
           <img src="./images/icons/play.png" id="play_intro_image" alt="">
           <h1 id="play_intro_text">Play Intro</h1>
+          <audio src="./audio/intro.wav" id="play_intro_audio"></audio>
+
         </button>
         <img id="volume_on" class="volume_button" src="./images/icons/volume.png" alt="">
-        <img src="./images/icons/more.png" id="more_button" alt="">
+        <img src="./images/icons/refresh.png" onclick="location.reload()" id="more_button" alt="">
       </div>
     
       <div id="next_buttons">
@@ -824,6 +826,39 @@
     window.addEventListener('scroll', onScroll);
     window.addEventListener('load', onScroll);
   }
+</script>
+<script>
+  var isplaying = 0;
+  const play_intro = document.getElementById('play_intro');
+  const play_intro_text = document.getElementById('play_intro_text');
+  const play_intro_image = document.getElementById('play_intro_image');
+  const play_intro_audio = document.getElementById('play_intro_audio');
+  const play_intro_mute = document.getElementById('volume_on')
+
+  play_intro.addEventListener('click',()=>{
+    intro_manager();
+  })
+
+  play_intro_mute.addEventListener('click',()=>{
+    play_intro_audio.muted = !play_intro_audio.muted;
+    play_intro_mute.src = play_intro_audio.muted ? "./images/icons/mute.png" : "./images/icons/volume.png";
+  })
+
+  function intro_manager(){
+    if(isplaying == 0){
+      play_intro_audio.play();
+      isplaying = 1;
+      play_intro_text.innerHTML='Pause Intro'
+      play_intro_image.src='./images/icons/pause.png'
+    }
+    else if(isplaying == 1){
+      play_intro_audio.pause();
+      isplaying = 0;
+      play_intro_text.innerHTML='Play Intro'
+      play_intro_image.src='./images/icons/play.png'
+    }
+  }
+
 </script>
 </body>
 </html>
