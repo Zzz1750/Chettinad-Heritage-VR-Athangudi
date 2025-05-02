@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-  <title>Athamkudi VR</title>
+  <title>athankudi VR</title>
 
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <style>
@@ -24,6 +24,7 @@
     #main_container{
       display: none;
     }
+
     
 
     .scene-container {
@@ -198,7 +199,7 @@
       to { opacity: 0.4; }
     }
 
-    #about_athamkudi_button {
+    #about_athankudi_button {
       position: absolute;
       font-family: 'Chakra Petch';
       top: 91%;
@@ -439,7 +440,7 @@
         height: 18px;
       }
       
-      #about_athamkudi_button {
+      #about_athankudi_button {
         font-size: 0.9rem;
         top: 90%;
       }
@@ -541,7 +542,7 @@
         height: 20px;
       }
       
-      #about_athamkudi_button {
+      #about_athankudi_button {
         font-size: 0.9rem;
         top: 95%;
       }
@@ -617,7 +618,7 @@
     <div class="scene-container">
       <p id="head_image_info">Click and Drag to Explore</p>
       
-      <h1 id="heading">ATHAMGUDI<br>PALACE<span class="vr-span">VR</span></h1>
+      <h1 id="heading">ATHANGUDI<br>PALACE<span class="vr-span">VR</span></h1>
       <div id="intro_controls">
         <button id="play_intro">
           <img src="./images/icons/play.png" id="play_intro_image" alt="">
@@ -628,17 +629,17 @@
       </div>
     
       <div id="next_buttons">
-        <button id="athamkudi_vr" class="common_next_button">
+        <button id="athankudi_vr" class="common_next_button">
           <img src="./images/icons/vr.png" class="button_icon" alt="VR Icon" draggable="false">
-          Athamkudi VR
+          athankudi VR
         </button>
-        <button id="athamkudi_walkthrough" class="common_next_button">
+        <button id="athankudi_walkthrough" class="common_next_button">
           <img src="./images/icons/view.png" class="button_icon" alt="View Icon">
-          Athamkudi View
+          athankudi View
         </button>
       </div>
   
-      <h1 id="about_athamkudi_button"></h1>
+      <h1 id="about_athankudi_button"></h1>
       
       <div class="scene-overlay"></div>
       
@@ -668,72 +669,130 @@
     <div class="vignette-overlay"></div>
   
   
-    <h1 id="content_heading1">Discover the Legacy of Athamkudi</h1>
-    <p id="content_para1">Nestled in the heart of Chettinad, Athamkudi is a village steeped in history, culture, and timeless beauty. Famous for its traditional Chettinad architecture, this village is home to some of the most exquisite mansions ever built by the Chettiar community renowned merchants and patrons of art and architecture. At the center of Athamkudi's charm lies the Athamkudi Palace, a stunning heritage home that stands as a testament to the craftsmanship of a bygone era. From intricately carved wooden doors to colorful handmade Athangudi tiles, every element of the palace tells a story of elegance, pride, and tradition.</p>
+    <h1 id="content_heading1">Discover the Legacy of athankudi</h1>
+    <p id="content_para1">Nestled in the heart of Chettinad, athankudi is a village steeped in history, culture, and timeless beauty. Famous for its traditional Chettinad architecture, this village is home to some of the most exquisite mansions ever built by the Chettiar community renowned merchants and patrons of art and architecture. At the center of athankudi's charm lies the athankudi Palace, a stunning heritage home that stands as a testament to the craftsmanship of a bygone era. From intricately carved wooden doors to colorful handmade Athangudi tiles, every element of the palace tells a story of elegance, pride, and tradition.</p>
     <div id="content_image_container" style="text-align: center;">
       <img src="./images/scene/content_image.png" id="content_image" alt="">
       <p id="content_image_fig">Fig 1.1 Wood Carvings</p>
     </div>
-    <p id="content_para2">Experience the grandeur of Athamkudi Palace in two unique ways.
+    <p id="content_para2">Experience the grandeur of athankudi Palace in two unique ways.
       The Walkthrough is a web-based journey, similar to Google Street View, enriched with visuals and audio that reveal the palace’s rich heritage.
       The VR Experience offers a fully immersive tour through a headset, bringing the sights and sounds of the palace to life in 360°.</p>
       <div id="content_divider" class="content-divider"></div>  
   </div>
     
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const sky = document.querySelector('#head_image');
-      const scene = document.querySelector('a-scene');
-      const images = ['#img1', '#img2', '#img3', '#img4', '#img5', 
-                     '#img6', '#img7', '#img8', '#img9', '#img10'];
+    <!-- Add this at the bottom of your body, replacing all your current script tags -->
+<script>
+  // ===== NEW LOADING SYSTEM =====
+  document.addEventListener('DOMContentLoaded', function() {
+    const scene = document.querySelector('a-scene');
+    const loadingScreen = document.getElementById('loading_screen');
+    const mainContainer = document.getElementById('main_container');
+
+    // First make sure A-Frame is fully initialized
+    if (!scene.hasLoaded) {
+      scene.addEventListener('loaded', initializeScene);
+    } else {
+      initializeScene();
+    }
+
+    function initializeScene() {
+      // Force a resize event to ensure proper rendering
+      window.dispatchEvent(new Event('resize'));
       
-      let currentImageIndex = 0;
-      
-      function getRandomImageIndex() {
-        let newIndex;
-        do {
-          newIndex = Math.floor(Math.random() * images.length);
-        } while (newIndex === currentImageIndex && images.length > 1);
-        return newIndex;
+      // Check if WebGL is properly initialized
+      const renderer = scene.renderer;
+      if (!renderer) {
+        console.error('WebGL renderer not initialized!');
+        return;
       }
+
+      // Additional check for textures
+      const sky = document.querySelector('#head_image');
+      if (sky && sky.material && sky.material.map) {
+        console.log('Sky texture loaded properly');
+      } else {
+        console.warn('Sky texture not ready, retrying...');
+        setTimeout(checkTextures, 500);
+      }
+
+      // Finally show the content
+      loadingScreen.style.display = 'none';
+      mainContainer.style.display = 'block';
       
-      function changeSkyImage() {
-        scene.classList.add('fade-out');
+      // Now initialize the rest of your functionality
+      initSkyRotation();
+      initButtonHover();
+      initScrollAnimations();
+    }
+
+    function checkTextures() {
+      const sky = document.querySelector('#head_image');
+      if (sky && sky.material && sky.material.map) {
+        loadingScreen.style.display = 'none';
+        mainContainer.style.display = 'block';
+      } else {
+        // If still not ready, force texture update
+        sky.setAttribute('src', sky.getAttribute('src'));
+        setTimeout(checkTextures, 500);
+      }
+    }
+  });
+
+  // ===== YOUR EXISTING FUNCTIONALITY (now organized into functions) =====
+  function initSkyRotation() {
+    const sky = document.querySelector('#head_image');
+    const scene = document.querySelector('a-scene');
+    const images = ['#img1', '#img2', '#img3', '#img4', '#img5', 
+                   '#img6', '#img7', '#img8', '#img9', '#img10'];
+    
+    let currentImageIndex = 0;
+    
+    function getRandomImageIndex() {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * images.length);
+      } while (newIndex === currentImageIndex && images.length > 1);
+      return newIndex;
+    }
+    
+    function changeSkyImage() {
+      scene.classList.add('fade-out');
+      
+      setTimeout(() => {
+        currentImageIndex = getRandomImageIndex();
+        sky.setAttribute('src', images[currentImageIndex]);
+        
+        scene.classList.remove('fade-out');
+        scene.classList.add('fade-in');
         
         setTimeout(() => {
-          currentImageIndex = getRandomImageIndex();
-          sky.setAttribute('src', images[currentImageIndex]);
-          
-          scene.classList.remove('fade-out');
-          scene.classList.add('fade-in');
-          
-          setTimeout(() => {
-            scene.classList.remove('fade-in');
-          }, 500);
-          
+          scene.classList.remove('fade-in');
         }, 500);
-      }
-      
-      setInterval(changeSkyImage, 8000);
-    });
-  </script>
-  <script>
+      }, 500);
+    }
+    
+    setInterval(changeSkyImage, 8000);
+  }
+
+  function initButtonHover() {
     const descriptions = {
-      athamkudi_vr: "Enter VR Experience of Athamkudi Palace",
-      athamkudi_walkthrough: "Explore Athamkudi Palace in a 360° Walkthrough"
+      athankudi_vr: "Enter VR Experience of athankudi Palace",
+      athankudi_walkthrough: "Explore athankudi Palace in a 360° Walkthrough"
     };
   
     Object.entries(descriptions).forEach(([id, text]) => {
       const btn = document.getElementById(id);
       btn.addEventListener('mouseenter', () => {
-        document.getElementById('about_athamkudi_button').innerHTML = text;
+        document.getElementById('about_athankudi_button').innerHTML = text;
       });
       btn.addEventListener('mouseleave', () => {
-        document.getElementById('about_athamkudi_button').innerHTML = "";
+        document.getElementById('about_athankudi_button').innerHTML = "";
       });
     });
-  </script>
-  <script>
+  }
+
+  function initScrollAnimations() {
     if (!AFRAME.utils.device.isMobile() && !AFRAME.utils.device.isTablet()) {
       document.querySelector('a-camera').setAttribute('look-controls', 'enabled', true);
     }    
@@ -756,8 +815,7 @@
     }, options);
 
     observer.observe(heading);
-  </script>
-  <script>
+
     const fadeInOnScroll = (elementId) => {
       const element = document.getElementById(elementId);
       const rect = element.getBoundingClientRect();
@@ -766,224 +824,17 @@
       }
     };
     
-    // Trigger fade-in animation for paragraph, image, and caption
     const onScroll = () => {
       fadeInOnScroll('content_para1');
       fadeInOnScroll('content_image');
       fadeInOnScroll('content_image_fig');
       fadeInOnScroll('content_para2');
-      fadeInOnScroll('content_divider'); // Changed from content-divider to content_divider
+      fadeInOnScroll('content_divider');
     };
     
     window.addEventListener('scroll', onScroll);
     window.addEventListener('load', onScroll);
-  </script>
-  <script>
-    // Enhanced preloader with caching support
-    document.addEventListener('DOMContentLoaded', function() {
-      const loadingScreen = document.getElementById('loading_screen');
-      const mainContainer = document.getElementById('main_container');
-      const aScene = document.querySelector('a-scene');
-      
-      // Add progress text
-      const progressText = document.createElement('div');
-      progressText.style.position = 'absolute';
-      progressText.style.bottom = '20px';
-      progressText.style.width = '100%';
-      progressText.style.textAlign = 'center';
-      progressText.style.color = 'white';
-      progressText.style.fontFamily = "'Chakra Petch', sans-serif";
-      progressText.style.fontSize = '14px';
-      loadingScreen.appendChild(progressText);
-      
-      // 1. CACHING SYSTEM
-      const CACHE_KEY = 'athamkudi-assets-cache';
-      const CACHE_VERSION = 'v1';
-      const shouldCache = true; // Set to false to disable caching
-      
-      async function cacheAssets() {
-        if (!shouldCache || !('caches' in window)) return;
-        
-        try {
-          const cache = await caches.open(`${CACHE_KEY}-${CACHE_VERSION}`);
-          const assets = [
-            // List all your assets here
-            './images/icons/play.png',
-            './images/icons/volume.png',
-            './images/icons/more.png',
-            './images/icons/vr.png',
-            './images/icons/view.png',
-            './images/scene/1.png',
-            './images/scene/2.png',
-            './images/scene/3.png',
-            './images/scene/4.png',
-            './images/scene/5.png',
-            './images/scene/6.png',
-            './images/scene/7.png',
-            './images/scene/8.png',
-            './images/scene/9.png',
-            './images/scene/10.png',
-            './images/scene/content_image.png'
-          ];
-          
-          await cache.addAll(assets);
-          console.log('Assets cached successfully');
-        } catch (err) {
-          console.warn('Caching failed:', err);
-        }
-      }
-      
-      // 2. ASSET LOADING SYSTEM
-      let totalAssets = 0;
-      let loadedAssets = 0;
-      
-      function updateProgress() {
-        progressText.textContent = `Loading ${loadedAssets}/${totalAssets} assets...`;
-      }
-      
-      function trackAssetLoading(img) {
-        totalAssets++;
-        updateProgress();
-        
-        return new Promise((resolve) => {
-          if (img.complete) {
-            loadedAssets++;
-            updateProgress();
-            resolve();
-          } else {
-            img.addEventListener('load', () => {
-              loadedAssets++;
-              updateProgress();
-              resolve();
-            });
-            img.addEventListener('error', () => {
-              loadedAssets++;
-              updateProgress();
-              resolve(); // Continue even if some fail
-            });
-          }
-        });
-      }
-      
-      // 3. A-FRAME TEXTURE LOADING TRACKER
-      AFRAME.registerComponent('texture-tracker', {
-        init: function() {
-          this.system = this.el.sceneEl.systems['texture-tracker'] = {
-            texturesLoading: 0,
-            update: () => {
-              if (this.system.texturesLoading === 0) {
-                checkAllLoaded();
-              }
-            }
-          };
-        }
-      });
-      
-      // Patch Three.js texture loader
-      const originalLoad = THREE.TextureLoader.prototype.load;
-      THREE.TextureLoader.prototype.load = function(url, onLoad, onProgress, onError) {
-        const sceneEl = document.querySelector('a-scene');
-        const tracker = sceneEl?.systems['texture-tracker'];
-        
-        if (tracker) {
-          tracker.texturesLoading++;
-          totalAssets++;
-          updateProgress();
-        }
-        
-        const wrappedOnLoad = (texture) => {
-          if (tracker) {
-            tracker.texturesLoading--;
-            loadedAssets++;
-            updateProgress();
-            tracker.update();
-          }
-          if (onLoad) onLoad(texture);
-        };
-        
-        const wrappedOnError = (error) => {
-          if (tracker) {
-            tracker.texturesLoading--;
-            loadedAssets++;
-            updateProgress();
-            tracker.update();
-          }
-          if (onError) onError(error);
-        };
-        
-        return originalLoad.call(this, url, wrappedOnLoad, onProgress, wrappedOnError);
-      };
-      
-      // 4. MAIN LOADING PROCESS
-      async function loadEverything() {
-        // Start caching (in background)
-        cacheAssets();
-        
-        // Track regular images
-        const allImages = Array.from(document.querySelectorAll('img'));
-        const imagePromises = allImages.map(trackAssetLoading);
-        
-        // Wait for images and A-Frame scene
-        await Promise.all(imagePromises);
-        
-        // Wait for A-Frame scene to load
-        if (!aScene.hasLoaded) {
-          await new Promise(resolve => {
-            aScene.addEventListener('loaded', resolve);
-          });
-        }
-        
-        // Extra check for textures
-        const tracker = aScene.systems['texture-tracker'];
-        if (tracker && tracker.texturesLoading > 0) {
-          await new Promise(resolve => {
-            const check = setInterval(() => {
-              if (tracker.texturesLoading === 0) {
-                clearInterval(check);
-                resolve();
-              }
-            }, 100);
-          });
-        }
-      }
-      
-      // 5. COMPLETION HANDLER
-      function checkAllLoaded() {
-        // All assets loaded and textures ready
-        if (loadedAssets >= totalAssets) {
-          showContent();
-        }
-      }
-      
-      function showContent() {
-        // Hide loading screen with fade
-        loadingScreen.style.transition = 'opacity 0.5s ease';
-        loadingScreen.style.opacity = '0';
-        
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-          mainContainer.style.display = 'block';
-          
-          // Ensure smooth appearance
-          setTimeout(() => {
-            window.dispatchEvent(new Event('load'));
-          }, 100);
-        }, 500);
-      }
-      
-      // 6. FALLBACK TIMEOUT (15 seconds)
-      const loadTimeout = setTimeout(() => {
-        console.warn('Loading timeout - showing content anyway');
-        showContent();
-      }, 15000);
-      
-      // Start loading process
-      loadEverything().then(checkAllLoaded).catch(err => {
-        console.error('Loading failed:', err);
-        showContent();
-      });
-    });
-  </script>
-  
+  }
+</script>
 </body>
 </html>
