@@ -40,26 +40,18 @@
     }
 
     #heading {
+      line-height: 90%;
       position: absolute;
       top: 20%;
       left: 40px;
       width: calc(100% - 40px);
-      font-size: 2.5rem;
+      font-size: 1rem;
       z-index: 10;
       pointer-events: none;
       text-align: left;
       margin: 0;
       padding: 0;
       font-family: 'Chakra Petch', sans-serif;
-    }
-
-    #heading .vr-span {
-      font-size: 17px;
-      color: rgb(25, 84, 172);
-      padding-top: 6px;
-      margin-left: 8px;
-      display: inline-block;
-      vertical-align: top;
     }
 
     #head_image_info {
@@ -388,6 +380,25 @@
       z-index: 1; 
       display: none; 
     }
+
+    #heading2 {
+      position: absolute;
+      top: 35%;
+      left: 40px;
+      width: calc(100% - 40px);
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.5;
+      z-index: 10;
+      pointer-events: none;
+      text-align: left;
+      margin: 0;
+      padding: 0;
+      font-family: 'Chakra Petch', sans-serif;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 600px;
+      
+    }
     
     @media (max-width: 1023px) {
       .scene-overlay {
@@ -478,6 +489,13 @@
         width: 60%;
         margin: 80px auto;
       }
+      #heading2 {
+        top: 45%; /* Adjusted for tablet positioning */
+        left: 15%;
+        width: calc(100% - 80px);
+        font-size: 1.1rem;
+        max-width: 700px;
+      } 
     }
 
     /* Desktop styles */
@@ -487,12 +505,9 @@
       }
       #heading {
         top: 25%;
-        font-size: 5rem;
+        font-size: 4rem;
         left: 15%;
         width: auto;
-      }
-      #heading .vr-span {
-        padding-top: 15px;
       }
       
       #head_image_info {
@@ -572,6 +587,13 @@
         width: 40%;
         margin: 100px auto;
       }
+      #heading2 {
+        top: 42%; 
+        left: 15%;
+        width: auto;
+        font-size: 1rem;
+        max-width: 800px;
+      }
     }
 
 
@@ -617,7 +639,9 @@
     <div class="scene-container">
       <p id="head_image_info">Click and Drag to Explore</p>
       
-      <h1 id="heading">ATHANGUDI<br>PALACE<span class="vr-span">VR</span></h1>
+      <h1 id="heading">Athangudi <span style="color: #D4AF37;">Palace</span> <br><span style="font-size: 2rem; color:#F5F1E3 ">An Immersive Experience Through Time</span></h1>
+      <h1 id="heading2">Discover the artistry, legacy, and spirit of a Chettiar masterpiece. <br>
+        Athangudi Palace made in 1932 comes alive in this virtual heritage journey through 360° view and Spatial audio.</h1>
       <div id="intro_controls">
         <button id="play_intro">
           <img src="./images/icons/play.png" id="play_intro_image" alt="">
