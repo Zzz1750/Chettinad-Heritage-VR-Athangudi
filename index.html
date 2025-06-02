@@ -42,10 +42,10 @@
     #heading {
       line-height: 90%;
       position: absolute;
-      top: 20%;
+      top: 25%;
       left: 40px;
       width: calc(100% - 40px);
-      font-size: 1rem;
+      font-size: 2rem;
       z-index: 10;
       pointer-events: none;
       text-align: left;
@@ -69,7 +69,7 @@
     
     #intro_controls {
       position: absolute;
-      top: 44%;
+      top: 40%;
       left: 40px;
       display: flex;
       align-items: center;
@@ -399,6 +399,11 @@
       max-width: 600px;
       
     }
+
+    #heading-2{
+      font-size: 1rem; 
+      color:#F5F1E3 
+    }
     
     @media (max-width: 1023px) {
       .scene-overlay {
@@ -411,9 +416,13 @@
     @media (min-width: 768px) {
       #heading {
         top: 30%;
-        font-size: 4rem;
+        font-size: 3rem;
         left: 15%;
         width: calc(100% - 80px);
+      }
+
+      #heading-2{
+        font-size: 1.5rem;
       }
       
       #intro_controls {
@@ -517,7 +526,7 @@
       }
       
       #intro_controls {
-        top: 52%;
+        top: 45%;
         left: 15%;
         width: auto;
         gap: 25px;
@@ -639,9 +648,9 @@
     <div class="scene-container">
       <p id="head_image_info">Click and Drag to Explore</p>
       
-      <h1 id="heading">Athangudi <span style="color: #D4AF37;">Palace</span> <br><span style="font-size: 2rem; color:#F5F1E3 ">An Immersive Experience Through Time</span></h1>
-      <h1 id="heading2">Discover the artistry, legacy, and spirit of a Chettiar masterpiece. <br>
-        Athangudi Palace made in 1932 comes alive in this virtual heritage journey through 360° view and Spatial audio.</h1>
+      <h1 id="heading">Athangudi Palace <br><span id="heading-2">An Immersive Experience Through Time</span></h1>
+      <!-- <h1 id="heading2">Discover the artistry, legacy, and spirit of a Chettiar masterpiece. <br>
+        Athangudi Palace made in 1932 comes alive in this virtual heritage journey through 360° view and Spatial audio.</h1> -->
       <div id="intro_controls">
         <button id="play_intro">
           <img src="./images/icons/play.png" id="play_intro_image" alt="">
@@ -658,7 +667,7 @@
           <img src="./images/icons/vr.png" class="button_icon" alt="VR Icon" draggable="false">
           athankudi VR
         </button>
-        <button id="athankudi_walkthrough" class="common_next_button">
+        <button id="athankudi_walkthrough" class="common_next_button" onclick="window.location='athamkudi_walkthrough.html'">
           <img src="./images/icons/view.png" class="button_icon" alt="View Icon">
           athankudi View
         </button>

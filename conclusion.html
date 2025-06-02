@@ -2,43 +2,38 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>360 Sky with Camera Rotation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conclusion</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <style>
-        body{
+        body {
             background-color: black;
             overflow: hidden;
             margin: 0;
-        }      
-        .fade-overlay {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        .fade-overlay, .vignette {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: black;
-            opacity: 0;
             pointer-events: none;
             z-index: 9998;
+        }
+
+        .fade-overlay {
+            background-color: black;
+            opacity: 0;
             transition: opacity 0.8s ease-in-out;
-      }
+        }
 
         .vignette {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(
-            circle at center,
-            transparent 0%,
-            rgba(0, 0, 0, 0.5) 70%,
-            rgba(0, 0, 0, 0.8) 100%
-            );
-            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0.8) 100%);
             z-index: 9999;
         }
 
@@ -46,44 +41,137 @@
             display: none !important;
         }
 
-      a-scene {
-        pointer-events: none;
-        user-select: none;
-        -webkit-user-select: none;
-        opacity: 0.5;
-      }
+        a-scene {
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            opacity: 0.5;
+        }
 
-      #heading1{
-        position: absolute;
-        color: white;
-        z-index: 10;
-        font-family: 'Chakra Petch';
-        top: 20%;
-        left: 50%;
-        font-size: 3rem;
-        transform: translate(-50%,-50%);
-      }
-      #content{
-        z-index: 10;
-        position: absolute;
-        top: 35%;
-        left: 50%;
-        color: white;
-        transform: translate(-50%,-50%);
-        font-size: 1.2rem;
-        font-family: 'Chakra Petch';
-        text-align: justify;
-      }
+        #container_conclusion {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            color: white;
+            padding: 30px;
+            z-index: 10;
+        }
+
+        #heading1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        #content {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+        }
+
+        #last_line {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #ccc;
+        }
+
+        #exit_button {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            padding: 10px 30px;
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: #ffffff10;
+            border: 1px solid #ffffff70;
+            color: white;
+            border-radius: 8px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        #exit_button:hover {
+            cursor: pointer;
+            background-color: #ffffff30;
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 10px #ffffff40;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            #container_conclusion {
+                top: 35%;
+                padding: 20px;
+            }
+            
+            #heading1 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+            
+            #content {
+                font-size: 1rem;
+                margin-bottom: 20px;
+            }
+            
+            #last_line {
+                font-size: 0.8rem;
+            }
+            
+            #exit_button {
+                top: 55%;
+                padding: 8px 25px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            #container_conclusion {
+                top: 30%;
+                padding: 15px;
+            }
+            
+            #heading1 {
+                font-size: 1.6rem;
+                margin-bottom: 12px;
+            }
+            
+            #content {
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            #last_line {
+                font-size: 0.75rem;
+            }
+            
+            #exit_button {
+                top: 50%;
+                padding: 7px 20px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
   </head>
   <body>
 
-
-    <h1 id="heading1">Every step echoed a story.</h1>
-    <p id="content">You’ve reached the end of your journey through Athamkudi <br> a place where heritage breathes through every wall and corridor.
-      <br>  We hope this glimpse into Chettiar elegance stays with you.</p>
+    <div id="container_conclusion">
+        <h1 id="heading1">Every step <br>Echoed a story.</h1>
+        <p id="content">You've reached the end of your journey through Athamkudi.</p>
+        <p id="last_line">~ We hope this glimpse into Chettiar elegance stays with you ~</p>
+    </div>
+    
+    <button id="exit_button">EXIT</button>
     <a-scene vr-mode-ui="false" cursor="rayOrigin: mouse" raycaster="objects: none">
-      <a-sky id="sky" src="images/outro_images/1.png" rotation="0 90 -90"></a-sky>
+      <a-sky id="sky" src="images/scene/4.png" rotation="0 90 -90"></a-sky>
       
       <div id="fadeOverlay" class="fade-overlay"></div>
 
@@ -96,11 +184,11 @@
 
     <script>
       const images = [
-        "images/outro_images/1.png",
-        "images/outro_images/2.png",
-        "images/outro_images/3.png",
-        "images/outro_images/4.png",
-        "images/outro_images/5.png"
+        "images/scene/4.png",
+        "images/scene/6.png",
+        "images/scene/7.png",
+        "images/scene/8.png",
+        "images/scene/9.png"
       ];
       
       const fadeOverlay = document.getElementById('fadeOverlay');
