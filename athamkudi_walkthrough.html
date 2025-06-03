@@ -108,7 +108,7 @@
     
 
     #main_container{
-      display: block;
+      display: none;
     }
    
 
@@ -123,7 +123,7 @@
       font-size: 24px;
       font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       position: absolute;
-      top: 50%;
+      top: 48%;
       left: 50%;
       transform: translate(-50%,-50%);
     }
@@ -206,19 +206,45 @@
       opacity: 0.9;
     }
     
-    
+    #exit_button{
+      display: none;
+      position: fixed;
+      color: white;
+      z-index: 10;
+      top: 30px; 
+      left: 30px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      border-radius: 8px;
+      backdrop-filter: blur(6px);
+      transition: all 0.3s ease;
+      z-index: 10;
+      pointer-events: auto;
+      cursor: pointer;
+      font-family: 'Chakra Petch', sans-serif;
+    }
+     #exit_button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
   </style>
 </head>
 <body>
 
-  <div id="loading_container" style="display: none;">
+    <div id="loading_container">
     <span id="loader_position">
       <div class="loader"></div> 
     </span>
     <p id="loading_name">ATHANGUDI PALACE</p>
-
+    <p id="loading_progress" style="color: white; position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Loading assets...</p>
   </div>
   <div id="main_container" style="position: relative;">
+    <button id="exit_button" onclick="window.location.href='./conclusion.html'">Exit</button>
     <a-scene vr-mode-ui="enabled: false">
       <a-sky rotation="0 -90 0"></a-sky>
         <a-plane
@@ -291,12 +317,15 @@
           </a-entity>
     </a-scene>
     <audio src=""></audio>
+    
     <div>
       <div id="vr_taskbar">
         <img id="zoom-in" src="./images/icons/plus.png" draggable="false">
         <img id="zoom-out" src="./images/icons/minus.png" draggable="false">
         <img id="fullscreen" src="./images/icons/fullscreen.png" draggable="false">
         <img id="refresh" src="./images/icons/refresh.png" draggable="false">
+        <img id="close" src="./images/icons/close.png" draggable="false">
+
       </div>
     
       <div id="navigation_bar">
@@ -318,341 +347,402 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      const imageAssets = [
+    './images/scene/1.png',
+    './images/scene/2.png',
+    './images/scene/3.png',
+    './images/scene/4.png',
+    './images/scene/5.png',
+    './images/scene/6.png',
+    './images/scene/7.png',
+    './images/scene/8.png',
+    './images/scene/9.png',
+    './images/scene/10.png',
+    './next.png',
+    './images/icons/plus.png',
+    './images/icons/minus.png',
+    './images/icons/fullscreen.png',
+    './images/icons/refresh.png',
+    './images/icons/close.png',
+    './images/icons/arrow.png',
+    './images/icons/audio.png'
+  ];
 
-      //main
-      const sky = document.querySelector("a-sky");
+  const audioAssets = [
+    './audio/1.wav',
+    './audio/2.wav',
+    './audio/3.wav',
+    './audio/4.wav',
+    './audio/5.wav',
+    './audio/6.wav'
+  ];
 
-      //buttons
-      const left = document.getElementById("left");
-      const right = document.getElementById("right");
-      const top = document.getElementById("top");
-      const bottom = document.getElementById("bottom");
+  let loadedCount = 0;
+  const totalAssets = imageAssets.length + audioAssets.length;
+  const progressElement = document.getElementById('loading_progress');
 
-      const left_arrow = document.getElementById('left_arrow');
-      const right_arrow = document.getElementById('right_arrow');
-      const up_arrow = document.getElementById('up_arrow');
-      const bottom_arrow = document.getElementById('bottom_arrow');
-
-      var left_arrow_value = right_arrow_value = up_arrow_value = bottom_arrow_value = 0;
-      var left_value = right_value = top_value = bottom_value = 0;
-      var left_location = right_location = top_location = bottom_location = '';
-
-      var audio_button = document.getElementById('audio_button');
-      var audio_button_value = 0;
-      var audio_number = 0;
-      var main_audio = document.getElementById('main_audio');
-
-      var place_info_name = document.getElementById('place_info_name');
-
+  function updateProgress() {
+    loadedCount++;
+    const progress = Math.round((loadedCount / totalAssets) * 100);
+    progressElement.textContent = `Loading assets... ${progress}%`;
     
-      //Image Updater
-      function update_images() {
-
-          main_audio.pause();
-          main_audio.currentTime = 0;
-
-          left.setAttribute('visible', left_value !== 0);
-          right.setAttribute('visible', right_value !== 0);
-          top.setAttribute('visible', top_value !== 0);
-          bottom.setAttribute('visible', bottom_value !== 0);
-
-
-          function toggleArrowDisplay(arrow, value) {
-            arrow.style.display = value === 0 ? 'none' : 'block';
-          }
-          
-          toggleArrowDisplay(left_arrow, left_arrow_value);
-          toggleArrowDisplay(right_arrow, right_arrow_value);
-          toggleArrowDisplay(up_arrow, up_arrow_value);
-          toggleArrowDisplay(bottom_arrow, bottom_arrow_value);
-
-      }
-
-
-      //Audio Updater
-      function update_audio(){
-        if (audio_button_value == 1) {
-          audio_button.setAttribute('visible', true);
-        }
-        else{
-          audio_button.setAttribute('visible', false);
-        }
+    if (loadedCount === totalAssets) {
+      // All assets loaded, show main content
+      setTimeout(() => {
+        document.getElementById('loading_container').style.display = 'none';
+        document.getElementById('main_container').style.display = 'block';
         
-      }
-      
-      const functions = {
-         scene1: function(){
-            sky.setAttribute('src','./images/scene/1.png')
-            left_arrow_value = right_arrow_value = bottom_arrow_value = bottom_value = right_value = left_value = 0;
-            up_arrow_value = top_value=1;
-            audio_button_value = 1;
-            top_location='scene2';
-            left_location = right_location = bottom_location = '';
-            place_info_name.innerHTML='Athangudi Palace';
-            audio_number = 1;
-            update_images();
-            update_audio();
-        },
+        // Now initialize your scene
+        initializeScene();
+      }, 500);
+    }
+  }
+
+  // Preload images
+  imageAssets.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.onload = updateProgress;
+    img.onerror = updateProgress; // Count even if some fail
+  });
+
+  // Preload audio
+  audioAssets.forEach(src => {
+    const audio = new Audio();
+    audio.src = src;
+    audio.addEventListener('canplaythrough', updateProgress);
+    audio.addEventListener('error', updateProgress); // Count even if some fail
+  });
+
+       function initializeScene() {
+    //main
+    const sky = document.querySelector("a-sky");
+
+    //buttons
+    const left = document.getElementById("left");
+    const right = document.getElementById("right");
+    const top = document.getElementById("top");
+    const bottom = document.getElementById("bottom");
+
+    const left_arrow = document.getElementById('left_arrow');
+    const right_arrow = document.getElementById('right_arrow');
+    const up_arrow = document.getElementById('up_arrow');
+    const bottom_arrow = document.getElementById('bottom_arrow');
+
+    var left_arrow_value = right_arrow_value = up_arrow_value = bottom_arrow_value = 0;
+    var left_value = right_value = top_value = bottom_value = 0;
+    var left_location = right_location = top_location = bottom_location = '';
+
+    var audio_button = document.getElementById('audio_button');
+    var audio_button_value = 0;
+    var audio_number = 0;
+    var main_audio = document.getElementById('main_audio');
+
+    var place_info_name = document.getElementById('place_info_name');
+
   
-          scene2 : function(){
-            sky.setAttribute('src','./images/scene/2.png');
-            up_arrow_value =  bottom_arrow_value = top_value =  bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value =  left_value = 0;
-            top_location='scene3';
-            left_location = right_location = '';
-            bottom_location = 'scene1';
-            audio_button_value = 0;
-            audio_number = 0;
-            place_info_name.innerHTML='Entrance';
-            update_audio();
-            update_images();
+    //Image Updater
+    function update_images() {
+
+        main_audio.pause();
+        main_audio.currentTime = 0;
+
+        left.setAttribute('visible', left_value !== 0);
+        right.setAttribute('visible', right_value !== 0);
+        top.setAttribute('visible', top_value !== 0);
+        bottom.setAttribute('visible', bottom_value !== 0);
+
+
+        function toggleArrowDisplay(arrow, value) {
+          arrow.style.display = value === 0 ? 'none' : 'block';
+        }
+        
+        toggleArrowDisplay(left_arrow, left_arrow_value);
+        toggleArrowDisplay(right_arrow, right_arrow_value);
+        toggleArrowDisplay(up_arrow, up_arrow_value);
+        toggleArrowDisplay(bottom_arrow, bottom_arrow_value);
+
+    }
+
+
+    //Audio Updater
+    function update_audio(){
+      if (audio_button_value == 1) {
+        audio_button.setAttribute('visible', true);
+      }
+      else{
+        audio_button.setAttribute('visible', false);
+      }
+      
+    }
+    
+    const functions = {
+       scene1: function(){
+          sky.setAttribute('src','./images/scene/1.png')
+          left_arrow_value = right_arrow_value = bottom_arrow_value = bottom_value = right_value = left_value = 0;
+          up_arrow_value = top_value=1;
+          audio_button_value = 1;
+          top_location='scene2';
+          left_location = right_location = bottom_location = '';
+          place_info_name.innerHTML='Athangudi Palace';
+          audio_number = 1;
+          update_images();
+          update_audio();
+      },
+
+        scene2 : function(){
+          sky.setAttribute('src','./images/scene/2.png');
+          up_arrow_value =  bottom_arrow_value = top_value =  bottom_value = 1;
+          right_arrow_value = left_arrow_value = right_value =  left_value = 0;
+          top_location='scene3';
+          left_location = right_location = '';
+          bottom_location = 'scene1';
+          audio_button_value = 0;
+          audio_number = 0;
+          place_info_name.innerHTML='Entrance';
+          update_audio();
+          update_images();
+      },
+
+        scene3 : function(){
+          sky.setAttribute('src','./images/scene/3.png');
+          up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
+          right_arrow_value = left_arrow_value = right_value = left_value = 0;
+          top_location='scene4';
+          left_location = right_location= '';
+          bottom_location = 'scene2';
+          audio_button_value = 1;
+          audio_number = 2;
+          place_info_name.innerHTML='Mugappu';
+          update_audio();
+          update_images();
         },
 
-          scene3 : function(){
-            sky.setAttribute('src','./images/scene/3.png');
-            up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value = left_value = 0;
-            top_location='scene4';
-            left_location = right_location= '';
-            bottom_location = 'scene2';
-            audio_button_value = 1;
-            audio_number = 2;
-            place_info_name.innerHTML='Mugappu';
-            update_audio();
-            update_images();
-          },
 
-
-          scene4 : function (){
-            sky.setAttribute('src','./images/scene/4.png');
-            up_arrow_value = bottom_arrow_value = right_arrow_value = left_arrow_value = top_value = bottom_value = right_value = bottom_value = left_value = 1;
-            top_location = 'scene8';
-            left_location = 'scene6';
-            right_location = 'scene5';
-            bottom_location = 'scene3';
-            audio_button_value = 0;
-            audio_number = 0;
-            place_info_name.innerHTML='Thinnai';
-            update_audio();
-            update_images();
-          },  
-          
-          
-          scene5 : function(){
-            sky.setAttribute('src','./images/scene/5.png');
-            left_arrow_value = left_value = 1;
-            up_arrow_value = bottom_arrow_value = right_arrow_value = top_value = bottom_value = right_value = 0;
-            top_location = right_location = bottom_location = '';
-            left_location = 'scene4';
-            audio_button_value = 0;
-            audio_number = 0;
-            place_info_name.innerHTML='Thinnai'
-            update_images();
-            update_audio();
-          },
-
-          scene6 : function(){
-            sky.setAttribute('src','./images/scene/6.png');
-            right_arrow_value = right_value = 1;
-            top_value = bottom_value = left_value = up_arrow_value = bottom_arrow_value = left_arrow_value = 0 ;
-            top_location = left_location = bottom_location = '';
-            right_location = 'scene4';
-            audio_button_value = 1;
-            audio_number = 3;
-            place_info_name.innerHTML='no name';
-            update_audio();
-            update_images();
-          },
-
-          scene8 : function(){
-            sky.setAttribute('src','./images/scene/8.png');
-            up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 1;
-            right_value = right_arrow_value = 0;
-            top_location = 'scene9';
-            left_location = 'scene7';
-            right_location = '';
-            bottom_location = 'scene4';
-            audio_button_value = 1;
-            audio_number = 4;
-            place_info_name.innerHTML='Valavu';
-            update_audio();
-            update_images();
-          }, 
-
-          scene7 : function(){   
-            sky.setAttribute('src','./images/scene/7.png');
-            up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 0;
-            right_value = right_arrow_value = 1;
-            top_location = left_location = bottom_location = '';
-            right_location = 'scene8';
-            audio_button_value = 1;
-            audio_number = 5;
-            place_info_name.innerHTML='Bhojana Saalai';
-            update_audio();
-            update_images();
-          },
-
-          scene9 : function(){
-            sky.setAttribute('src','./images/scene/9.png');
-            up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
-            right_arrow_value = left_arrow_value = right_value = left_value = 0;
-            top_location = 'scene10';
-            left_location = right_location = '';
-            bottom_location = 'scene8';
-            audio_button_value = 1;
-            audio_number = 6;
-            place_info_name.innerHTML='Moonram Kattu';
-            update_audio();
-            update_images();
-          },
-
-          scene10 : function(){
-            sky.setAttribute('src','./images/scene/10.png');
-            top_value = right_value = left_value = up_arrow_value = left_arrow_value = right_arrow_value = 0 ;
-            bottom_value , bottom_arrow_value = 1;
-            top_location = left_location = right_location = '';
-            bottom_location = 'scene9';
-            audio_button_value = 0;
-            audio_number = 0;
-            place_info_name.innerHTML='Moonram Kattu';
-            update_audio();
-            update_images();
-          }
-          
-      }
+        scene4 : function (){
+          sky.setAttribute('src','./images/scene/4.png');
+          up_arrow_value = bottom_arrow_value = right_arrow_value = left_arrow_value = top_value = bottom_value = right_value = bottom_value = left_value = 1;
+          top_location = 'scene8';
+          left_location = 'scene6';
+          right_location = 'scene5';
+          bottom_location = 'scene3';
+          audio_button_value = 0;
+          audio_number = 0;
+          place_info_name.innerHTML='Thinnai';
+          update_audio();
+          update_images();
+        },  
         
-      //audio
-      audio_button.addEventListener('click',function(){
+        
+        scene5 : function(){
+          sky.setAttribute('src','./images/scene/5.png');
+          left_arrow_value = left_value = 1;
+          up_arrow_value = bottom_arrow_value = right_arrow_value = top_value = bottom_value = right_value = 0;
+          top_location = right_location = bottom_location = '';
+          left_location = 'scene4';
+          audio_button_value = 0;
+          audio_number = 0;
+          place_info_name.innerHTML='Thinnai'
+          update_images();
+          update_audio();
+        },
 
-          if( audio_number == 0){
-            console.log('no audio found')
-          }
-          else if(audio_number == 1 ){
-            main_audio.src = './audio/1.wav';
-            main_audio.play();
-          }
-          else if( audio_number == 2){
-            main_audio.src = './audio/2.wav';
-            main_audio.play();
-          }
-          else if( audio_number == 3){
-            main_audio.src = './audio/3.wav';
-            main_audio.play();
-          }
-          else if( audio_number == 4){
-            main_audio.src = './audio/4.wav';
-            main_audio.play();
-          }
-          else if( audio_number == 5){
-            main_audio.src = './audio/5.wav';
-            main_audio.play();
-          }
-          else if( audio_number == 6){
-            main_audio.src = './audio/6.wav';
-            main_audio.play();
-          }
-         
-      })
+        scene6 : function(){
+          sky.setAttribute('src','./images/scene/6.png');
+          right_arrow_value = right_value = 1;
+          top_value = bottom_value = left_value = up_arrow_value = bottom_arrow_value = left_arrow_value = 0 ;
+          top_location = left_location = bottom_location = '';
+          right_location = 'scene4';
+          audio_button_value = 1;
+          audio_number = 3;
+          place_info_name.innerHTML='no name';
+          update_audio();
+          update_images();
+        },
 
-      functions.scene1(); // default scene
+        scene8 : function(){
+          sky.setAttribute('src','./images/scene/8.png');
+          up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 1;
+          right_value = right_arrow_value = 0;
+          top_location = 'scene9';
+          left_location = 'scene7';
+          right_location = '';
+          bottom_location = 'scene4';
+          audio_button_value = 1;
+          audio_number = 4;
+          place_info_name.innerHTML='Valavu';
+          update_audio();
+          update_images();
+        }, 
 
+        scene7 : function(){   
+          sky.setAttribute('src','./images/scene/7.png');
+          up_arrow_value = bottom_arrow_value = left_arrow_value = top_value = bottom_value = left_value = 0;
+          right_value = right_arrow_value = 1;
+          top_location = left_location = bottom_location = '';
+          right_location = 'scene8';
+          audio_button_value = 1;
+          audio_number = 5;
+          place_info_name.innerHTML='Bhojana Saalai';
+          update_audio();
+          update_images();
+        },
 
-      function handleDirectionClick(location) {
-        const sceneName = location();
-        if (functions[sceneName]) {
-          functions[sceneName]();
-        } else {
-          console.warn("No function found for:", sceneName);
+        scene9 : function(){
+          sky.setAttribute('src','./images/scene/9.png');
+          up_arrow_value = bottom_arrow_value = top_value = bottom_value = 1;
+          right_arrow_value = left_arrow_value = right_value = left_value = 0;
+          top_location = 'scene10';
+          left_location = right_location = '';
+          bottom_location = 'scene8';
+          audio_button_value = 1;
+          audio_number = 6;
+          place_info_name.innerHTML='Moonram Kattu';
+          update_audio();
+          update_images();
+        },
+
+        scene10 : function(){
+          sky.setAttribute('src','./images/scene/10.png');
+          top_value = right_value = left_value = up_arrow_value = left_arrow_value = right_arrow_value = 0 ;
+          bottom_value , bottom_arrow_value = 1;
+          top_location = left_location = right_location = '';
+          bottom_location = 'scene9';
+          audio_button_value = 0;
+          audio_number = 0;
+          place_info_name.innerHTML='Moonram Kattu';
+          update_audio();
+          update_images();
+          call_exit_button();
         }
-      }
-      const addClick = (el, loc) => el.addEventListener('click', () => handleDirectionClick(() => loc));
-
-      top.addEventListener('click', () => handleDirectionClick(() => top_location));
-      left.addEventListener('click', () => handleDirectionClick(() => left_location));
-      right.addEventListener('click', () => handleDirectionClick(() => right_location));
-      bottom.addEventListener('click', () => handleDirectionClick(() => bottom_location));
-
-      up_arrow.addEventListener('click',() => handleDirectionClick(() => top_location));
-      bottom_arrow.addEventListener('click',() => handleDirectionClick(() => bottom_location));
-      left_arrow.addEventListener('click',() => handleDirectionClick(() => left_location));
-      right_arrow.addEventListener('click',() => handleDirectionClick(() => right_location));
-
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowRight') {  
-          handleDirectionClick(() => right_location);   
-        }
-      });
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowLeft') {  
-          handleDirectionClick(() => left_location); 
-        }
-      });
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowUp') {  
-          handleDirectionClick(() => top_location); 
-        }
-      });
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowDown') {  
-          handleDirectionClick(() => bottom_location); 
-        }
-      });
+        
+    }
       
-    });
+    //audio
+    audio_button.addEventListener('click',function(){
 
+        if( audio_number == 0){
+          console.log('no audio found')
+        }
+        else if(audio_number == 1 ){
+          main_audio.src = './audio/1.wav';
+          main_audio.play();
+        }
+        else if( audio_number == 2){
+          main_audio.src = './audio/2.wav';
+          main_audio.play();
+        }
+        else if( audio_number == 3){
+          main_audio.src = './audio/3.wav';
+          main_audio.play();
+        }
+        else if( audio_number == 4){
+          main_audio.src = './audio/4.wav';
+          main_audio.play();
+        }
+        else if( audio_number == 5){
+          main_audio.src = './audio/5.wav';
+          main_audio.play();
+        }
+        else if( audio_number == 6){
+          main_audio.src = './audio/6.wav';
+          main_audio.play();
+        }
+       
+    })
+
+    functions.scene1(); // default scene
+
+    function call_exit_button(){
+      document.getElementById('exit_button').style.display='block';
+    }
+    function handleDirectionClick(location) {
+      const sceneName = location();
+      if (functions[sceneName]) {
+        functions[sceneName]();
+      } else {
+        console.warn("No function found for:", sceneName);
+      }
+    }
+    const addClick = (el, loc) => el.addEventListener('click', () => handleDirectionClick(() => loc));
+
+    top.addEventListener('click', () => handleDirectionClick(() => top_location));
+    left.addEventListener('click', () => handleDirectionClick(() => left_location));
+    right.addEventListener('click', () => handleDirectionClick(() => right_location));
+    bottom.addEventListener('click', () => handleDirectionClick(() => bottom_location));
+
+    up_arrow.addEventListener('click',() => handleDirectionClick(() => top_location));
+    bottom_arrow.addEventListener('click',() => handleDirectionClick(() => bottom_location));
+    left_arrow.addEventListener('click',() => handleDirectionClick(() => left_location));
+    right_arrow.addEventListener('click',() => handleDirectionClick(() => right_location));
+
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {  
+        handleDirectionClick(() => right_location);   
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {  
+        handleDirectionClick(() => left_location); 
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowUp') {  
+        handleDirectionClick(() => top_location); 
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {  
+        handleDirectionClick(() => bottom_location); 
+      }
+    });
+    
     const camera = document.querySelector("a-camera");
 
     document.getElementById("refresh").addEventListener("click", () => {
       location.reload();
     });
 
-
-  </script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const zoomInBtn = document.getElementById('zoom-in');
-      const zoomOutBtn = document.getElementById('zoom-out');
-      const camera = document.getElementById('manualCam');
-    
-      zoomInBtn.addEventListener('click', () => {
-        let fov = camera.getAttribute('camera').fov;
-        if (fov > 20) { // prevent too much zoom
-          fov -= 5;
-          camera.setAttribute('camera', 'fov', fov);
-        }
-      });
-    
-      zoomOutBtn.addEventListener('click', () => {
-        let fov = camera.getAttribute('camera').fov;
-        if (fov < 100) { // prevent too much zoom out
-          fov += 5;
-          camera.setAttribute('camera', 'fov', fov);
-        }
-      });
-
-      document.getElementById("fullscreen").addEventListener("click", () => {
-        const elem = document.documentElement; // or any specific element you want
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { // Safari
-          elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { // IE11
-          elem.msRequestFullscreen();
-        }
-      });
-      
+    document.getElementById("close").addEventListener("click", () => {
+      window.location.href='./conclusion.html'
     });
-    </script>
-    
 
+    // Zoom controls
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const cameraElement = document.getElementById('manualCam');
+  
+    zoomInBtn.addEventListener('click', () => {
+      let fov = cameraElement.getAttribute('camera').fov;
+      if (fov > 20) { // prevent too much zoom
+        fov -= 5;
+        cameraElement.setAttribute('camera', 'fov', fov);
+      }
+    });
+  
+    zoomOutBtn.addEventListener('click', () => {
+      let fov = cameraElement.getAttribute('camera').fov;
+      if (fov < 100) { // prevent too much zoom out
+        fov += 5;
+        cameraElement.setAttribute('camera', 'fov', fov);
+      }
+    });
 
+    document.getElementById("fullscreen").addEventListener("click", () => {
+      const elem = document.documentElement; // or any specific element you want
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { // Safari
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { // IE11
+        elem.msRequestFullscreen();
+      }
+    });
 
-  <script>
+    // Camera controls
     let cam = document.getElementById('manualCam');
     let startX, startY;
-
     let rotation = { x: 0, y: 0 };
 
     document.addEventListener('touchstart', (e) => {
@@ -704,6 +794,8 @@
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     });
+  }
+});
   </script>
 </body>
 </html>
