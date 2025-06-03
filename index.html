@@ -632,17 +632,57 @@
       100%   {transform:scaleX(var(--s,1)) translate(0) rotate(90deg)}
     }
 
-    #loading_screen{
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
+    #loading_screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .loading-text {
+      color: white;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1rem;
+      text-align: center;
+    }
+    
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.3s ease;
+    }
+    
+    @media (min-width: 768px) {
+      .loading-text {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="loading_screen">
+   <div id="loading_screen">
     <div class="loader"></div>
+    <p class="loading-text">Loading Athangudi Palace...</p>
+    <div class="progress-bar">
+      <div class="progress" id="loading_progress"></div>
+    </div>
   </div>
   <div id="main_container">
     <div class="scene-container">
@@ -717,51 +757,127 @@
     
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const scene = document.querySelector('a-scene');
     const loadingScreen = document.getElementById('loading_screen');
+    const progressBar = document.getElementById('loading_progress');
     const mainContainer = document.getElementById('main_container');
-
-    if (!scene.hasLoaded) {
-      scene.addEventListener('loaded', initializeScene);
-    } else {
-      initializeScene();
-    }
-
-    function initializeScene() {
-      window.dispatchEvent(new Event('resize'));
+    const scene = document.querySelector('a-scene');
+    
+    // Initial state
+    let assetsLoaded = false;
+    let sceneReady = false;
+    let progress = 0;
+    
+    // Update progress bar
+    function updateProgress(value) {
+      progress = Math.min(100, Math.max(0, value));
+      progressBar.style.width = progress + '%';
       
-      const renderer = scene.renderer;
-      if (!renderer) {
-        console.error('WebGL renderer not initialized!');
+      // When progress reaches 90%, we'll wait for scene to fully load
+      if (progress >= 90 && !sceneReady) {
+        checkSceneReady();
+      }
+    }
+    
+    // Simulate progressive loading (you can replace this with actual asset loading callbacks)
+    const loadingInterval = setInterval(() => {
+      // Increment progress until we reach 90%
+      if (progress < 90) {
+        updateProgress(progress + 10);
+      } else {
+        clearInterval(loadingInterval);
+      }
+    }, 300);
+    
+    // Check if A-Frame scene is ready
+    function checkSceneReady() {
+      // First check if A-Frame is initialized
+      if (typeof AFRAME === 'undefined') {
+        setTimeout(checkSceneReady, 100);
         return;
       }
-
-      const sky = document.querySelector('#head_image');
-      if (sky && sky.material && sky.material.map) {
-        console.log('Sky texture loaded properly');
-      } else {
-        console.warn('Sky texture not ready, retrying...');
-        setTimeout(checkTextures, 500);
-      }
-
-      loadingScreen.style.display = 'none';
-      mainContainer.style.display = 'block';
       
-      initSkyRotation();
-      initButtonHover();
-      initScrollAnimations();
-    }
-
-    function checkTextures() {
-      const sky = document.querySelector('#head_image');
-      if (sky && sky.material && sky.material.map) {
-        loadingScreen.style.display = 'none';
-        mainContainer.style.display = 'block';
+      // Check if scene has loaded
+      if (scene.hasLoaded) {
+        sceneReady = true;
+        updateProgress(95);
+        checkAssets();
       } else {
-        sky.setAttribute('src', sky.getAttribute('src'));
-        setTimeout(checkTextures, 500);
+        scene.addEventListener('loaded', function() {
+          sceneReady = true;
+          updateProgress(95);
+          checkAssets();
+        });
+        // Fallback in case loaded event doesn't fire
+        setTimeout(function() {
+          if (!sceneReady) {
+            console.warn('Fallback scene load triggered');
+            sceneReady = true;
+            updateProgress(95);
+            checkAssets();
+          }
+        }, 5000);
       }
     }
+    
+    // Check if assets are loaded
+    function checkAssets() {
+      const assets = scene.querySelector('a-assets');
+      if (!assets) {
+        // No assets to load
+        assetsLoaded = true;
+        completeLoading();
+        return;
+      }
+      
+      if (assets.hasLoaded) {
+        assetsLoaded = true;
+        updateProgress(100);
+        completeLoading();
+      } else {
+        assets.addEventListener('loaded', function() {
+          assetsLoaded = true;
+          updateProgress(100);
+          completeLoading();
+        });
+        // Fallback in case assets don't load
+        setTimeout(function() {
+          if (!assetsLoaded) {
+            console.warn('Fallback assets load triggered');
+            assetsLoaded = true;
+            updateProgress(100);
+            completeLoading();
+          }
+        }, 3000);
+      }
+    }
+    
+    // Final step when everything is loaded
+    function completeLoading() {
+      if (progress < 100) updateProgress(100);
+      
+      // Fade out loading screen
+      loadingScreen.style.opacity = '0';
+      loadingScreen.style.transition = 'opacity 0.5s ease-out';
+      
+      setTimeout(function() {
+        loadingScreen.style.display = 'none';
+        
+        // Show main container with fade in
+        mainContainer.style.display = 'block';
+        setTimeout(function() {
+          mainContainer.style.opacity = '1';
+          
+          // Initialize all functionality
+          initSkyRotation();
+          initButtonHover();
+          initScrollAnimations();
+          initAudioControls();
+        }, 50);
+      }, 500);
+    }
+    
+    // Start checking scene readiness
+    setTimeout(checkSceneReady, 100);
   });
 
   function initSkyRotation() {

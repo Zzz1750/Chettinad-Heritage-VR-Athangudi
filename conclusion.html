@@ -1,260 +1,312 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conclusion</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: black;
-            overflow: hidden;
-            margin: 0;
-            font-family: 'Chakra Petch', sans-serif;
-        }
-
-        body > * {
-            pointer-events: none;
-        }
-
-        #exit_button {
-            pointer-events: auto !important; 
-        }
-
-        .fade-overlay, .vignette {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        }
-
-        .fade-overlay {
-            background-color: black;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-        }
-
-        .vignette {
-            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0.8) 100%);
-            z-index: 9999;
-        }
-
-        .a-enter-vr {
-            display: none !important;
-        }
-
-        a-scene {
-            pointer-events: none;
-            user-select: none;
-            -webkit-user-select: none;
-            opacity: 0.5;
-        }
-
-        #container_conclusion {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            color: white;
-            padding: 30px;
-            z-index: 10;
-        }
-
-        #heading1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-
-        #content {
-            font-size: 1.1rem;
-            font-weight: 400;
-            margin-bottom: 25px;
-            color: #e0e0e0;
-        }
-
-        #last_line {
-            font-size: 0.9rem;
-            font-style: italic;
-            color: #ccc;
-        }
-
-        #exit_button {
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            padding: 10px 30px;
-            font-size: 1rem;
-            font-weight: 500;
-            background-color: #ffffff10;
-            border: 1px solid #ffffff70;
-            color: white;
-            border-radius: 8px;
-            backdrop-filter: blur(6px);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        #exit_button:hover {
-            cursor: pointer;
-            background-color: #ffffff30;
-            transform: translate(-50%, -50%) scale(1.05);
-            box-shadow: 0 0 10px #ffffff40;
-        }
-
-        /* Responsive adjustments */
-        @media screen and (max-width: 768px) {
-            #container_conclusion {
-                top: 35%;
-                padding: 20px;
-            }
-            
-            #heading1 {
-                font-size: 2rem;
-                margin-bottom: 15px;
-            }
-            
-            #content {
-                font-size: 1rem;
-                margin-bottom: 20px;
-            }
-            
-            #last_line {
-                font-size: 0.8rem;
-            }
-            
-            #exit_button {
-                top: 55%;
-                padding: 8px 25px;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            #container_conclusion {
-                top: 30%;
-                padding: 15px;
-            }
-            
-            #heading1 {
-                font-size: 1.6rem;
-                margin-bottom: 12px;
-            }
-            
-            #content {
-                font-size: 0.9rem;
-                margin-bottom: 15px;
-            }
-            
-            #last_line {
-                font-size: 0.75rem;
-            }
-            
-            #exit_button {
-                top: 50%;
-                padding: 7px 20px;
-                font-size: 0.85rem;
-            }
-        }
-
-        .loader {
-            display: inline-flex;
-            gap: 5px;
-            }
-        .loader:before,
-        .loader:after {
-            content: "";
-            width: 25px;
-            aspect-ratio: 1;
-            box-shadow: 0 0 0 3px inset #fff;
-            animation: l4 1.5s infinite;
-        }
-        .loader:after {
-            --s: -1;
-            animation-delay: 0.75s
-        }
-        @keyframes l4 {
-        0%     {transform:scaleX(var(--s,1)) translate(0) rotate(0)}
-        16.67% {transform:scaleX(var(--s,1)) translate(-50%) rotate(0)}
-        33.33% {transform:scaleX(var(--s,1)) translate(-50%) rotate(90deg)}
-        50%,
-        100%   {transform:scaleX(var(--s,1)) translate(0) rotate(90deg)}
-        }
-        #loading_container{
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-        }
-    </style>
-  </head>
-  <body>
-
-    <div id="loading_container">
-        <div class="loader"></div> 
-
-    </div>
-    <div id="main_container" style="display: none;">
-        <div id="container_conclusion">
-        <h1 id="heading1">Every step <br>Echoed a story.</h1>
-        <p id="content">You've reached the end of your journey through Athamkudi.</p>
-        <p id="last_line">~ We hope this glimpse into Chettiar elegance stays with you ~</p>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athankudi - Journey's End</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;700&display=swap" rel="stylesheet">
+  <style>
+    /* Base Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: white;
+      font-family: 'Chakra Petch', sans-serif;
+      overflow: hidden;
+    }
+    
+    /* Loading Screen */
+    #loading_screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+    
+    .loader {
+      display: inline-flex;
+      gap: 5px;
+    }
+    
+    .loader:before,
+    .loader:after {
+      content: "";
+      width: 25px;
+      aspect-ratio: 1;
+      box-shadow: 0 0 0 3px inset #fff;
+      animation: l4 1.5s infinite;
+    }
+    
+    .loader:after {
+      --s: -1;
+      animation-delay: 0.75s;
+    }
+    
+    @keyframes l4 {
+      0% { transform: scaleX(var(--s,1)) translate(0) rotate(0); }
+      16.67% { transform: scaleX(var(--s,1)) translate(-50%) rotate(0); }
+      33.33% { transform: scaleX(var(--s,1)) translate(-50%) rotate(90deg); }
+      50%, 100% { transform: scaleX(var(--s,1)) translate(0) rotate(90deg); }
+    }
+    
+    #loading_text {
+      color: white;
+      margin-top: 20px;
+      text-align: center;
+      max-width: 80%;
+    }
+    
+    /* Main Content */
+    #main_content {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+    
+    /* Conclusion Text */
+    .conclusion-text {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+    
+    .conclusion-text h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+    
+    .conclusion-text p {
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-bottom: 25px;
+      color: #e0e0e0;
+    }
+    
+    .conclusion-text .signature {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #ccc;
+    }
+    
+    /* Exit Button */
+    #exit_button {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      border-radius: 8px;
+      backdrop-filter: blur(6px);
+      transition: all 0.3s ease;
+      z-index: 10;
+      pointer-events: auto;
+      cursor: pointer;
+      font-family: 'Chakra Petch', sans-serif;
+    }
+    
+    #exit_button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* A-Frame Scene */
+    a-scene {
+      width: 100%;
+      height: 100vh;
+      opacity: 0.5;
+    }
+    
+    .vignette {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0.8) 100%);
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .conclusion-text {
+        top: 35%;
+      }
+      
+      .conclusion-text h1 {
+        font-size: 2rem;
+      }
+      
+      .conclusion-text p {
+        font-size: 1rem;
+      }
+      
+      #exit_button {
+        top: 55%;
+        padding: 10px 25px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .conclusion-text {
+        top: 30%;
+      }
+      
+      .conclusion-text h1 {
+        font-size: 1.6rem;
+      }
+      
+      .conclusion-text p {
+        font-size: 0.9rem;
+      }
+      
+      #exit_button {
+        top: 50%;
+        padding: 8px 20px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading_screen">
+    <div class="loader"></div>
+    <p id="loading_text">Preparing your journey's conclusion...</p>
+  </div>
+  
+  <!-- Main Content -->
+  <div id="main_content">
+    <div class="conclusion-text">
+      <h1>Every step<br>Echoed a story.</h1>
+      <p>You've reached the end of your journey through Athankudi.</p>
+      <p class="signature">~ We hope this glimpse into Chettiar elegance stays with you ~</p>
     </div>
     
     <button id="exit_button">EXIT</button>
-    <a-scene vr-mode-ui="false" cursor="rayOrigin: mouse" raycaster="objects: none">
-      <a-sky id="sky" src="images/scene/4.png" rotation="0 90 -90"></a-sky>
+    
+    <!-- A-Frame Scene -->
+    <a-scene vr-mode-ui="enabled: false">
+      <a-assets>
+        <img id="scene1" src="images/scene/4.png" alt="Athankudi scene 1">
+        <img id="scene2" src="images/scene/6.png" alt="Athankudi scene 2">
+        <img id="scene3" src="images/scene/7.png" alt="Athankudi scene 3">
+        <img id="scene4" src="images/scene/8.png" alt="Athankudi scene 4">
+        <img id="scene5" src="images/scene/9.png" alt="Athankudi scene 5">
+      </a-assets>
       
-      <div id="fadeOverlay" class="fade-overlay"></div>
-
-      <div class="vignette"></div>
-
-      <a-entity id="cameraRig" rotation="0 0 0" animation="property: rotation; to: 0 0 360; loop: true; dur: 80000; easing: linear">
+      <a-sky id="sky" src="#scene1" rotation="0 90 -90"></a-sky>
+      
+      <a-entity id="cameraRig" rotation="0 0 0" 
+                animation="property: rotation; to: 0 0 360; loop: true; dur: 80000; easing: linear">
         <a-camera rotation="-90 0 0" camera="fov: 90" active="true"></a-camera>
       </a-entity>
     </a-scene>
-    </div>
     
+    <div class="vignette"></div>
+  </div>
 
-    <script>
-        function preloadImages(imageArray) {
-    return Promise.all(imageArray.map(imgSrc => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = imgSrc;
-        img.onload = resolve;
-        img.onerror = reject;
+  <script>
+    // Configuration
+    const CONFIG = {
+      LOADING_TIMEOUT: 15000, // 15 seconds max loading time
+      IMAGE_ROTATION_INTERVAL: 7000, // 7 seconds between image changes
+      FADE_DURATION: 800 // 0.8 seconds for fade transitions
+    };
+    
+    // State management
+    const appState = {
+      loaded: false,
+      currentImageIndex: 0,
+      imageUrls: ["#scene1", "#scene2", "#scene3", "#scene4", "#scene5"],
+      loadingTimeout: null
+    };
+    
+    // DOM Elements
+    const elements = {
+      loadingScreen: document.getElementById('loading_screen'),
+      loadingText: document.getElementById('loading_text'),
+      mainContent: document.getElementById('main_content'),
+      scene: document.querySelector('a-scene'),
+      sky: document.getElementById('sky'),
+      exitButton: document.getElementById('exit_button')
+    };
+    
+    // Initialize the application
+    function initApp() {
+      // First verify A-Frame is loaded
+      if (typeof AFRAME === 'undefined') {
+        showError("Failed to load VR library. Please refresh the page.");
+        return;
+      }
+      
+      setupEventListeners();
+      startLoadingProcess();
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Exit button
+      elements.exitButton.addEventListener('click', () => {
+        window.location.href = "index.html";
       });
-    }));
-  }
-
-  // Wait for A-Frame to be ready
-  document.querySelector('a-scene').addEventListener('loaded', function() {
-    // Also wait for images to load
-    preloadImages(images).then(() => {
-      // All images and scene are loaded, show main content
-      document.getElementById('loading_container').style.display = 'none';
-      document.getElementById('main_container').style.display = 'block';
-    }).catch(err => {
-      console.error('Error loading images:', err);
-      // Still show main content even if some images failed
-      document.getElementById('loading_container').style.display = 'none';
-      document.getElementById('main_container').style.display = 'block';
-    });
-  });
-
-      const images = [
+      
+      // Handle scene loading
+      if (elements.scene.hasLoaded) {
+        onSceneReady();
+      } else {
+        elements.scene.addEventListener('loaded', onSceneReady);
+      }
+      
+      // Loading timeout safety net
+      appState.loadingTimeout = setTimeout(() => {
+        if (!appState.loaded) {
+          showError("Loading is taking longer than expected. Trying to continue...");
+          finalizeLoading();
+        }
+      }, CONFIG.LOADING_TIMEOUT);
+    }
+    
+    function startLoadingProcess() {
+      updateLoadingText("Loading resources...");
+      preloadImages().then(() => {
+        updateLoadingText("Exiting Initiated...");
+      }).catch(error => {
+        console.error("Image loading error:", error);
+        updateLoadingText("Some images didn't load properly. Continuing...");
+        finalizeLoading();
+      });
+    }
+    
+    function preloadImages() {
+      const imageUrls = [
         "images/scene/4.png",
         "images/scene/6.png",
         "images/scene/7.png",
@@ -262,34 +314,106 @@
         "images/scene/9.png"
       ];
       
-      const fadeOverlay = document.getElementById('fadeOverlay');
-      const sky = document.getElementById('sky');
-      let currentImageIndex = 0;
+      return Promise.all(imageUrls.map(url => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = url;
+          img.onload = resolve;
+          img.onerror = () => {
+            console.warn(`Failed to load image: ${url}`);
+            resolve(); 
+          };
+        });
+      }));
+    }
+    
+    function onSceneReady() {
+      if (appState.loaded) return;
+      
+      if (elements.sky && elements.sky.material && elements.sky.material.map) {
+        finalizeLoading();
+      } else {
+      
+        setTimeout(() => {
+          if (elements.sky && elements.sky.material && elements.sky.material.map) {
+            finalizeLoading();
+          } else {
+            updateLoadingText("Wrapping up...");
+            finalizeLoading();
+          }
+        }, 500);
+      }
+    }
+    
+  
+    function finalizeLoading() {
+      clearTimeout(appState.loadingTimeout);
+      appState.loaded = true;
+      
+    
+      elements.loadingScreen.style.opacity = '0';
+      
+      setTimeout(() => {
+        elements.loadingScreen.style.display = 'none';
+        elements.mainContent.style.display = 'block';
+       
+        initImageRotation();
+      }, 500);
+    }
+    
+ 
+    function initImageRotation() {
+      const fadeOverlay = document.createElement('div');
+      fadeOverlay.style.position = 'fixed';
+      fadeOverlay.style.top = '0';
+      fadeOverlay.style.left = '0';
+      fadeOverlay.style.width = '100%';
+      fadeOverlay.style.height = '100%';
+      fadeOverlay.style.backgroundColor = 'black';
+      fadeOverlay.style.opacity = '0';
+      fadeOverlay.style.transition = `opacity ${CONFIG.FADE_DURATION}ms ease-in-out`;
+      fadeOverlay.style.pointerEvents = 'none';
+      fadeOverlay.style.zIndex = '4';
+      document.body.appendChild(fadeOverlay);
       
       function changeImage() {
-        fadeOverlay.style.opacity = 1;
+        fadeOverlay.style.opacity = '1';
         
         setTimeout(() => {
-          currentImageIndex = (currentImageIndex + 1) % images.length;
-          sky.setAttribute('src', images[currentImageIndex]);
+          appState.currentImageIndex = (appState.currentImageIndex + 1) % appState.imageUrls.length;
+          elements.sky.setAttribute('src', appState.imageUrls[appState.currentImageIndex]);
           
           setTimeout(() => {
-            fadeOverlay.style.opacity = 0;
+            fadeOverlay.style.opacity = '0';
           }, 100);
-        }, 800);
+        }, CONFIG.FADE_DURATION);
       }
       
-      setInterval(changeImage, 7000);
-
-      /*document.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }, true);*/
-    </script>
-    <script>
-       document.getElementById('exit_button').addEventListener('click', () => {
-        window.location.href = "index.html"; 
-        });
-    </script>
-  </body>
+   
+      setInterval(changeImage, CONFIG.IMAGE_ROTATION_INTERVAL);
+    }
+    
+   
+    function updateLoadingText(text) {
+      elements.loadingText.textContent = text;
+    }
+    
+    function showError(message) {
+      elements.loadingText.textContent = message;
+      elements.loadingText.style.color = '#ff6b6b';
+      
+     
+      setTimeout(() => {
+        elements.loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          elements.loadingScreen.style.display = 'none';
+          elements.mainContent.style.display = 'block';
+        }, 500);
+      }, 2000);
+    }
+    
+   
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
 </html>
