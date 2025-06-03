@@ -175,6 +175,12 @@
       #vr_taskbar{
         left: 70%;
       }
+      #loading_name{
+        font-size: 15px;
+      }
+      #loading_progress{
+        font-size: 12px;
+      }
     }
 
     .tourism-frame {
@@ -232,6 +238,16 @@
       transform: scale(1.05);
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
+    #stuck_message{
+      display: none;
+      color: rgba(255, 255, 255, 0.2); 
+      position: absolute;
+      top: 70%; 
+      font-size: 15px;
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
   </style>
 </head>
 <body>
@@ -242,6 +258,7 @@
     </span>
     <p id="loading_name">ATHANGUDI PALACE</p>
     <p id="loading_progress" style="color: white; position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Loading assets...</p>
+    <p id="stuck_message">Stuck? Hold on a bit, or just refresh.</p>
   </div>
   <div id="main_container" style="position: relative;">
     <button id="exit_button" onclick="window.location.href='./conclusion.html'">Exit</button>
@@ -796,6 +813,10 @@
     });
   }
 });
+
+  setTimeout(()=>{
+    document.getElementById("stuck_message").style.display = "block";
+  },9000);
   </script>
 </body>
 </html>
