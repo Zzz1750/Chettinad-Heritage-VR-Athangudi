@@ -16,6 +16,14 @@
             font-family: 'Chakra Petch', sans-serif;
         }
 
+        body > * {
+            pointer-events: none;
+        }
+
+        #exit_button {
+            pointer-events: auto !important; 
+        }
+
         .fade-overlay, .vignette {
             position: fixed;
             top: 0;
@@ -159,11 +167,46 @@
                 font-size: 0.85rem;
             }
         }
+
+        .loader {
+            display: inline-flex;
+            gap: 5px;
+            }
+        .loader:before,
+        .loader:after {
+            content: "";
+            width: 25px;
+            aspect-ratio: 1;
+            box-shadow: 0 0 0 3px inset #fff;
+            animation: l4 1.5s infinite;
+        }
+        .loader:after {
+            --s: -1;
+            animation-delay: 0.75s
+        }
+        @keyframes l4 {
+        0%     {transform:scaleX(var(--s,1)) translate(0) rotate(0)}
+        16.67% {transform:scaleX(var(--s,1)) translate(-50%) rotate(0)}
+        33.33% {transform:scaleX(var(--s,1)) translate(-50%) rotate(90deg)}
+        50%,
+        100%   {transform:scaleX(var(--s,1)) translate(0) rotate(90deg)}
+        }
+        #loading_container{
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
     </style>
   </head>
   <body>
 
-    <div id="container_conclusion">
+    <div id="loading_container">
+        <div class="loader"></div> 
+
+    </div>
+    <div id="main_container" style="display: none;">
+        <div id="container_conclusion">
         <h1 id="heading1">Every step <br>Echoed a story.</h1>
         <p id="content">You've reached the end of your journey through Athamkudi.</p>
         <p id="last_line">~ We hope this glimpse into Chettiar elegance stays with you ~</p>
@@ -181,8 +224,36 @@
         <a-camera rotation="-90 0 0" camera="fov: 90" active="true"></a-camera>
       </a-entity>
     </a-scene>
+    </div>
+    
 
     <script>
+        function preloadImages(imageArray) {
+    return Promise.all(imageArray.map(imgSrc => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = imgSrc;
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+    }));
+  }
+
+  // Wait for A-Frame to be ready
+  document.querySelector('a-scene').addEventListener('loaded', function() {
+    // Also wait for images to load
+    preloadImages(images).then(() => {
+      // All images and scene are loaded, show main content
+      document.getElementById('loading_container').style.display = 'none';
+      document.getElementById('main_container').style.display = 'block';
+    }).catch(err => {
+      console.error('Error loading images:', err);
+      // Still show main content even if some images failed
+      document.getElementById('loading_container').style.display = 'none';
+      document.getElementById('main_container').style.display = 'block';
+    });
+  });
+
       const images = [
         "images/scene/4.png",
         "images/scene/6.png",
@@ -210,10 +281,15 @@
       
       setInterval(changeImage, 7000);
 
-      document.addEventListener('click', function(e) {
+      /*document.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-      }, true);
+      }, true);*/
+    </script>
+    <script>
+       document.getElementById('exit_button').addEventListener('click', () => {
+        window.location.href = "index.html"; 
+        });
     </script>
   </body>
 </html>

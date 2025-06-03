@@ -13,6 +13,7 @@
       cursor: default;
       margin: 0;
       padding: 0;
+      background-color: black;
     }
     .clickable {
       cursor: pointer;
@@ -109,6 +110,7 @@
     #main_container{
       display: block;
     }
+   
 
     #loader_position{
       position: absolute;
@@ -117,6 +119,7 @@
       transform: translateX(-50%) translateY(-50%);
     }
     #loading_name{
+      color: white;
       font-size: 24px;
       font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
       position: absolute;
@@ -202,7 +205,9 @@
       border-radius: 8px;
     }
     
-    
+    a-scene{
+      opacity: 0.9;
+    }
     
     
   </style>
@@ -262,7 +267,7 @@
           <a-entity id="audio_button" visible="false" position="0 1 -4" >
     
             <a-circle
-              radius="0.2"
+              radius="0.12"
               color="#ffffff"
               material="shader: flat; opacity:0.7"
               
@@ -270,9 +275,9 @@
         
             <a-plane
               src="./images/icons/audio.png"
-              width="0.25"
-              height="0.25"
-              position="0 0 0.01"
+              width="0.1"
+              height="0.1"
+              position="0 0 1"
               material="shader: flat"
               transparent="true"
             ></a-plane>
@@ -311,6 +316,8 @@
     </div>
   </div>
 
+    <audio id="main_audio"></audio>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -335,12 +342,18 @@
 
       var audio_button = document.getElementById('audio_button');
       var audio_button_value = 0;
+      var audio_number = 0;
+      var main_audio = document.getElementById('main_audio');
 
       var place_info_name = document.getElementById('place_info_name');
 
     
       //Image Updater
       function update_images() {
+
+          main_audio.pause();
+          main_audio.currentTime = 0;
+
           left.setAttribute('visible', left_value !== 0);
           right.setAttribute('visible', right_value !== 0);
           top.setAttribute('visible', top_value !== 0);
@@ -379,6 +392,7 @@
             top_location='scene2';
             left_location = right_location = bottom_location = '';
             place_info_name.innerHTML='Athangudi Palace';
+            audio_number = 1;
             update_images();
             update_audio();
         },
@@ -391,6 +405,7 @@
             left_location = right_location = '';
             bottom_location = 'scene1';
             audio_button_value = 0;
+            audio_number = 0;
             place_info_name.innerHTML='Entrance';
             update_audio();
             update_images();
@@ -404,6 +419,7 @@
             left_location = right_location= '';
             bottom_location = 'scene2';
             audio_button_value = 1;
+            audio_number = 2;
             place_info_name.innerHTML='Mugappu';
             update_audio();
             update_images();
@@ -418,6 +434,7 @@
             right_location = 'scene5';
             bottom_location = 'scene3';
             audio_button_value = 0;
+            audio_number = 0;
             place_info_name.innerHTML='Thinnai';
             update_audio();
             update_images();
@@ -431,6 +448,7 @@
             top_location = right_location = bottom_location = '';
             left_location = 'scene4';
             audio_button_value = 0;
+            audio_number = 0;
             place_info_name.innerHTML='Thinnai'
             update_images();
             update_audio();
@@ -443,6 +461,7 @@
             top_location = left_location = bottom_location = '';
             right_location = 'scene4';
             audio_button_value = 1;
+            audio_number = 3;
             place_info_name.innerHTML='no name';
             update_audio();
             update_images();
@@ -457,6 +476,7 @@
             right_location = '';
             bottom_location = 'scene4';
             audio_button_value = 1;
+            audio_number = 4;
             place_info_name.innerHTML='Valavu';
             update_audio();
             update_images();
@@ -469,6 +489,7 @@
             top_location = left_location = bottom_location = '';
             right_location = 'scene8';
             audio_button_value = 1;
+            audio_number = 5;
             place_info_name.innerHTML='Bhojana Saalai';
             update_audio();
             update_images();
@@ -482,6 +503,7 @@
             left_location = right_location = '';
             bottom_location = 'scene8';
             audio_button_value = 1;
+            audio_number = 6;
             place_info_name.innerHTML='Moonram Kattu';
             update_audio();
             update_images();
@@ -494,6 +516,7 @@
             top_location = left_location = right_location = '';
             bottom_location = 'scene9';
             audio_button_value = 0;
+            audio_number = 0;
             place_info_name.innerHTML='Moonram Kattu';
             update_audio();
             update_images();
@@ -501,8 +524,41 @@
           
       }
         
+      //audio
+      audio_button.addEventListener('click',function(){
+
+          if( audio_number == 0){
+            console.log('no audio found')
+          }
+          else if(audio_number == 1 ){
+            main_audio.src = './audio/1.wav';
+            main_audio.play();
+          }
+          else if( audio_number == 2){
+            main_audio.src = './audio/2.wav';
+            main_audio.play();
+          }
+          else if( audio_number == 3){
+            main_audio.src = './audio/3.wav';
+            main_audio.play();
+          }
+          else if( audio_number == 4){
+            main_audio.src = './audio/4.wav';
+            main_audio.play();
+          }
+          else if( audio_number == 5){
+            main_audio.src = './audio/5.wav';
+            main_audio.play();
+          }
+          else if( audio_number == 6){
+            main_audio.src = './audio/6.wav';
+            main_audio.play();
+          }
+         
+      })
+
       functions.scene1(); // default scene
-      
+
 
       function handleDirectionClick(location) {
         const sceneName = location();
