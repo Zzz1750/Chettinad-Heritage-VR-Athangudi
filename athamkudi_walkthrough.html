@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Athangudi Palace VR</title>
+  <title>Athangudi Walkthrough</title>
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <style>
     * {
@@ -263,6 +263,80 @@
       position: absolute;
       z-index: 10;
     }
+
+
+    /*Instruction*/
+    #instruction_container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    
+    #walkthrough_instruction {
+      position: relative;
+      width: 600px;
+      max-width: 90%;
+      bottom: 50px;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+    }
+
+    #instruction_image {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+    }
+
+    #start_walkthrough {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      border-radius: 8px;
+      backdrop-filter: blur(6px);
+      transition: all 0.3s ease;
+      z-index: 10;
+      cursor: pointer;
+      font-family: 'Chakra Petch', sans-serif;
+    }
+    
+    #start_walkthrough:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+
+    @media only screen and (max-width: 600px) {
+      #start_walkthrough {
+        padding: 10px 25px;
+        font-size: 0.9rem;
+        bottom: 20px;
+      }
+    }
+
+    @media only screen and (max-width: 400px) {
+      #start_walkthrough {
+        padding: 8px 20px;
+        font-size: 0.8rem;
+        bottom: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -276,6 +350,14 @@
   </div>
   
   <div id="main_container" style="position: relative;">
+    <div id="instruction_container">
+    <div id="walkthrough_instruction">
+      <div class="image-container">
+        <img id="instruction_image" src="./images/scene/instruction.png" alt="">
+        <button id="start_walkthrough" onclick="start_walkthrough()">Start</button>
+      </div>
+    </div>
+  </div>
     <button id="exit_button" onclick="window.location.href='./conclusion.html'">Exit</button>
     <a-scene vr-mode-ui="enabled: false" cursor="rayOrigin: mouse; fuse: false">
       <a-assets>
@@ -403,6 +485,7 @@
   </div>
 
   <audio id="main_audio"></audio>
+  <audio id="background_audio" src="./audio/background.mp3" loop></audio>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -758,14 +841,7 @@
         });
 
         document.getElementById("fullscreen").addEventListener("click", () => {
-          const elem = document.documentElement;
-          if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-          } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-          } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-          }
+          toggleFullscreen();
         });
 
         // Mouse and touch controls for camera rotation
@@ -841,6 +917,46 @@
     setTimeout(() => {
       document.getElementById("stuck_message").style.display = "block";
     }, 9000);
+
+
+    function start_walkthrough(){
+      document.getElementById('instruction_container').style.display='none';
+      document.getElementById('background_audio').play();
+      toggleFullscreen();
+    }
+    
+    function toggleFullscreen() {
+      const elem = document.documentElement;
+
+      if (
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      ) {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } else {
+        // Enter fullscreen
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        }
+      }
+    }
   </script>
 </body>
 </html>

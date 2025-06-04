@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-  <title>athankudi VR</title>
+  <title>Athangudi Palace</title>
 
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <style>
@@ -680,11 +680,11 @@
       <div id="next_buttons">
         <button id="athankudi_vr" class="common_next_button">
           <img src="./images/icons/vr.png" class="button_icon" alt="VR Icon" draggable="false">
-          athankudi VR
+          athangudi VR
         </button>
         <button id="athankudi_walkthrough" class="common_next_button" onclick="window.location.href='./athamkudi_walkthrough.html'">
           <img src="./images/icons/view.png" class="button_icon" alt="View Icon">
-          athankudi View
+          athangudi View
         </button>
       </div>
 
@@ -697,14 +697,10 @@
         <a-assets>
           <img id="skyTexture" src="./images/scene/1.png"/>
           <img id="img1" src="./images/scene/1.png" />
-          <img id="img2" src="./images/scene/2.png" />
-          <img id="img3" src="./images/scene/3.png" />
           <img id="img4" src="./images/scene/4.png" />
-          <img id="img5" src="./images/scene/5.png" />
           <img id="img6" src="./images/scene/6.png" />
           <img id="img7" src="./images/scene/7.png" />
           <img id="img8" src="./images/scene/8.png" />
-          <img id="img9" src="./images/scene/9.png" />
           <img id="img10" src="./images/scene/10.png" />
         </a-assets>
         <a-sky
@@ -718,13 +714,13 @@
     <div class="vignette-overlay"></div>
 
 
-    <h1 id="content_heading1">Discover the Legacy of athankudi</h1>
-    <p id="content_para1">Nestled in the heart of Chettinad, athankudi is a village steeped in history, culture, and timeless beauty. Famous for its traditional Chettinad architecture, this village is home to some of the most exquisite mansions ever built by the Chettiar community renowned merchants and patrons of art and architecture. At the center of athankudi's charm lies the athankudi Palace, a stunning heritage home that stands as a testament to the craftsmanship of a bygone era. From intricately carved wooden doors to colorful handmade Athangudi tiles, every element of the palace tells a story of elegance, pride, and tradition.</p>
+    <h1 id="content_heading1">Discover the Legacy of athangudi</h1>
+    <p id="content_para1">Nestled in the heart of Chettinad, athangudi is a village steeped in history, culture, and timeless beauty. Famous for its traditional Chettinad architecture, this village is home to some of the most exquisite mansions ever built by the Chettiar community renowned merchants and patrons of art and architecture. At the center of athangudi's charm lies the athangudi Palace, a stunning heritage home that stands as a testament to the craftsmanship of a bygone era. From intricately carved wooden doors to colorful handmade Athangudi tiles, every element of the palace tells a story of elegance, pride, and tradition.</p>
     <div id="content_image_container" style="text-align: center;">
       <img src="./images/scene/content_image.png" id="content_image" alt="">
       <p id="content_image_fig">Fig 1.1 Wood Carvings</p>
     </div>
-    <p id="content_para2">Experience the grandeur of athankudi Palace in two unique ways.
+    <p id="content_para2">Experience the grandeur of athangudi Palace in two unique ways.
       The Walkthrough is a web-based journey, similar to Google Street View, enriched with visuals and audio that reveal the palace’s rich heritage.
       The VR Experience offers a fully immersive tour through a headset, bringing the sights and sounds of the palace to life in 360°.</p>
       <div id="content_divider" class="content-divider"></div>  
@@ -782,8 +778,8 @@
   function initSkyRotation() {
     const sky = document.querySelector('#head_image');
     const scene = document.querySelector('a-scene');
-    const images = ['#img1', '#img2', '#img3', '#img4', '#img5', 
-                   '#img6', '#img7', '#img8', '#img9', '#img10'];
+    const images = ['#img1','#img4', 
+                   '#img6', '#img7', '#img8','#img10'];
 
     let currentImageIndex = 0;
 
