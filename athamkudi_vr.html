@@ -7,6 +7,9 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   </head>
   <body>
+
+    <audio id="main_audio"></audio>
+
     <a-scene>
 
       <a-sky id="sky" rotation="0 -90 0"></a-sky>
@@ -24,23 +27,7 @@
 
       <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: white; opacity: 0.9"></a-entity>
 
-      <a-entity id="audio_button" visible="true" position="4.2 2.3 -3">
-        <a-circle
-          radius="0.08"
-          color="#ffffff"
-          material="shader: flat; opacity: 0.7">
-        </a-circle>
-
-        <a-plane
-          class="clickable"
-          src="./images/icons/close.png"
-          width="0.1"
-          height="0.1"
-          position="0 0 0"
-          material="shader: flat"
-          transparent="true">
-        </a-plane>
-      </a-entity>
+     
       
       <a-plane
         class="clickable"
@@ -86,7 +73,7 @@
         material="opacity: 0.8; transparent: true">
       </a-plane>
 
-      <a-entity id="audio_button" visible="true" position="0 1.5 -3">
+      <a-entity id="audio_button" visible="false" position="-2 1 -4" class="clickable">
         <a-circle
           radius="0.12"
           color="#ffffff"
@@ -94,7 +81,6 @@
         </a-circle>
 
         <a-plane
-          class="clickable"
           src="./images/icons/audio.png"
           width="0.1"
           height="0.1"
@@ -122,6 +108,11 @@
         const top = document.getElementById("top");
         const bottom = document.getElementById("bottom");
 
+        const audio_button = document.getElementById('audio_button');
+        let audio_button_value = 0;
+        let audio_number = 0;
+        const main_audio = document.getElementById('main_audio');
+
         let left_value = right_value = top_value = bottom_value = 0;
         let left_location = right_location = top_location = bottom_location = '';
 
@@ -134,15 +125,20 @@
 
         const functions = {
           scene1: function() {
+            audio_number = 1;
+            audio_button_value = 1;
             top_value = 1;
             bottom_value = left_value = right_value = 0;
             sky.setAttribute('src','./images/scene/1.png');
             top_location = 'scene2';
             left_location = right_location = bottom_location = '';
             update_images();
+            update_audio();
           },
 
           scene2: function(){
+            audio_button_value = 0;
+            audio_number = 0;
             top_value = bottom_value = 1;
             left_value = right_value = 0;
             sky.setAttribute('src','./images/scene/2.png');
@@ -150,9 +146,12 @@
             bottom_location = 'scene1';
             left_location = right_location = '';
             update_images();
+            update_audio();
           },
 
           scene3: function(){
+            audio_button_value = 1;
+            audio_number = 2;
             top_value = bottom_value = 1;
             left_value = right_value = 0;
             sky.setAttribute('src','./images/scene/3.png');
@@ -160,9 +159,12 @@
             bottom_location = 'scene2';
             left_location = right_location = '';
             update_images();
+            update_audio();
           },
 
           scene4: function(){
+            audio_button_value = 0;
+            audio_number = 0;
             top_value = bottom_value = left_value = right_value = 1;
             sky.setAttribute('src','./images/scene/4.png');
             top_location = 'scene8';
@@ -170,36 +172,48 @@
             right_location = 'scene5';
             bottom_location = 'scene3';
             update_images();
+            update_audio();
           },
 
            scene5: function(){
+            audio_button_value = 0;
+            audio_number = 0;
             left_value = 1;
             top_value = bottom_value = right_value = 0;
             sky.setAttribute('src','./images/scene/5.png');
             left_location = 'scene4';
             right_location = top_location = bottom_location = '';
             update_images();
+            update_audio();
           },
 
           scene6: function(){
+            audio_button_value = 1;
+            audio_number = 3;
             right_value = 1;
             top_value = bottom_value = left_value = 0;
             sky.setAttribute('src','./images/scene/6.png');
             right_location = 'scene4';
             left_location = top_location = bottom_location = '';
             update_images();
+            update_audio();
           },
 
           scene7: function(){
+            audio_button_value = 1;
+            audio_number = 5;
             right_value = 1;
             top_value = bottom_value = left_value = 0;
             sky.setAttribute('src','./images/scene/7.png');
             right_location = 'scene8';
             left_location = top_location = bottom_location = '';
             update_images();
+            update_audio();
           },
 
           scene8: function(){
+            audio_number = 1;
+            audio_number = 4;
             top_value = bottom_value = left_value = 1;
             right_value = 0;
             sky.setAttribute('src','./images/scene/8.png');
@@ -208,9 +222,12 @@
             right_location = '';
             bottom_location = 'scene5';
             update_images();
+            update_audio();
           },
 
           scene9: function(){
+            audio_button_value = 1;
+            audio_number = 6;
             top_value = bottom_value  = 1;
             right_value = left_value = 0;
             sky.setAttribute('src','./images/scene/9.png');
@@ -219,15 +236,19 @@
             right_location = '';
             bottom_location = 'scene8';
             update_images();
+            update_audio();
           },
           
           scene10: function(){
+            audio_button_value = 0;
+            audio_number = 0;
             bottom_value  = 1;
             right_value = left_value = top_value = 0;
             sky.setAttribute('src','./images/scene/10.png');
             top_location = left_location = right_location = ''; 
             bottom_location = 'scene9';
             update_images();
+            update_audio();
           }
 
         }
@@ -245,6 +266,19 @@
             functions[location]();
           }
         }
+
+        function update_audio() {
+          audio_button.setAttribute('visible', audio_button_value == 1);
+        }
+
+        audio_button.addEventListener('click', function() {
+          if (audio_number == 0) {
+            console.log('No audio for this scene');
+          } else {
+            main_audio.src = `./audio/${audio_number}.wav`;
+            main_audio.play().catch(e => console.log('Audio play failed:', e));
+          }
+        });
       });
 
         
