@@ -9,10 +9,8 @@
   <body>
     <a-scene>
 
-      <!-- Sky Background -->
-      <a-sky src="./images/scene/1.png" rotation="0 -90 0"></a-sky>
+      <a-sky id="sky" rotation="0 -90 0"></a-sky>
 
-      <!-- Camera Rig with Camera -->
       <a-entity id="cameraRig">
         <a-entity 
           id="camera"
@@ -22,13 +20,10 @@
         </a-entity>
       </a-entity>
 
-      <!-- Left Hand Controller -->
       <a-entity laser-controls="hand: left" raycaster="objects: .clickable" line="color: white; opacity: 0.9"></a-entity>
 
-      <!-- Right Hand Controller -->
       <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: white; opacity: 0.9"></a-entity>
 
-      <!-- Planes (Make All .clickable) -->
       <a-entity id="audio_button" visible="true" position="4.2 2.3 -3">
         <a-circle
           radius="0.08"
@@ -117,11 +112,140 @@
         width="4">
       </a-text>
     </a-scene>
+
      <script>
-      document.getElementById('top').addEventListener('click',()=>{
-        const textEl = document.querySelector('#myText');
-        textEl.setAttribute('value', 'Top Clicked');
-      })
+       document.addEventListener("DOMContentLoaded", () => {
+
+        const sky = document.getElementById("sky")
+        const left = document.getElementById("left");
+        const right = document.getElementById("right");
+        const top = document.getElementById("top");
+        const bottom = document.getElementById("bottom");
+
+        let left_value = right_value = top_value = bottom_value = 0;
+        let left_location = right_location = top_location = bottom_location = '';
+
+        function update_images(){
+          left.setAttribute('visible', left_value !== 0);
+          right.setAttribute('visible', right_value !== 0);
+          top.setAttribute('visible', top_value !== 0);
+          bottom.setAttribute('visible', bottom_value !== 0);
+        }
+
+        const functions = {
+          scene1: function() {
+            top_value = 1;
+            bottom_value = left_value = right_value = 0;
+            sky.setAttribute('src','./images/scene/1.png');
+            top_location = 'scene2';
+            left_location = right_location = bottom_location = '';
+            update_images();
+          },
+
+          scene2: function(){
+            top_value = bottom_value = 1;
+            left_value = right_value = 0;
+            sky.setAttribute('src','./images/scene/2.png');
+            top_location = 'scene3';
+            bottom_location = 'scene1';
+            left_location = right_location = '';
+            update_images();
+          },
+
+          scene3: function(){
+            top_value = bottom_value = 1;
+            left_value = right_value = 0;
+            sky.setAttribute('src','./images/scene/3.png');
+            top_location = 'scene4';
+            bottom_location = 'scene2';
+            left_location = right_location = '';
+            update_images();
+          },
+
+          scene4: function(){
+            top_value = bottom_value = left_value = right_value = 1;
+            sky.setAttribute('src','./images/scene/4.png');
+            top_location = 'scene8';
+            left_location = 'scene6';
+            right_location = 'scene5';
+            bottom_location = 'scene3';
+            update_images();
+          },
+
+           scene5: function(){
+            left_value = 1;
+            top_value = bottom_value = right_value = 0;
+            sky.setAttribute('src','./images/scene/5.png');
+            left_location = 'scene5';
+            right_location = top_location = bottom_location = '';
+            update_images();
+          },
+
+          scene6: function(){
+            right_value = 1;
+            top_value = bottom_value = left_value = 0;
+            sky.setAttribute('src','./images/scene/6.png');
+            right_location = 'scene5';
+            left_location = top_location = bottom_location = '';
+            update_images();
+          },
+
+          scene7: function(){
+            right_value = 1;
+            top_value = bottom_value = left_value = 0;
+            sky.setAttribute('src','./images/scene/7.png');
+            right_location = 'scene8';
+            left_location = top_location = bottom_location = '';
+            update_images();
+          },
+
+          scene8: function(){
+            top_value = bottom_value = left_value = 1;
+            right_value = 0;
+            sky.setAttribute('src','./images/scene/8.png');
+            top_location = 'scene9';
+            left_location = 'scene7';
+            right_location = '';
+            bottom_location = 'scene5';
+          },
+
+          scene9: function(){
+            top_value = bottom_value  = 1;
+            right_value = left_value = 0;
+            sky.setAttribute('src','./images/scene/9.png');
+            top_location = 'scene10';
+            left_location = '';
+            right_location = '';
+            bottom_location = 'scene8';
+          },
+          
+          scene10: function(){
+            bottom_value  = 1;
+            right_value = left_value = top_value = 0;
+            sky.setAttribute('src','./images/scene/10.png');
+            top_location = left_location = right_location = ''; 
+            bottom_location = 'scene9';
+          }
+
+        }
+
+        functions.scene1();
+
+
+        top.addEventListener('click', () => handleDirectionClick(top_location));
+        left.addEventListener('click', () => handleDirectionClick(left_location));
+        right.addEventListener('click', () => handleDirectionClick(right_location));
+        bottom.addEventListener('click', () => handleDirectionClick(bottom_location));
+
+        function handleDirectionClick(location) {
+          if (location && functions[location]) {
+            functions[location]();
+          }
+        }
+      });
+
+        
+
     </script>
   </body>
 </html>
