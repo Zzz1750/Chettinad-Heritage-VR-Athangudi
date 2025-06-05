@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>VR Sky Scene</title>
+    <title>Athankudi VR</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   </head>
@@ -92,14 +92,22 @@
         </a-plane>
       </a-entity>
 
-       <a-text 
-        id="myText"
-        value="Hello VR!" 
-        color="#FFFFFF" 
-        position="-1 2 -3"
-        width="4">
-      </a-text>
-    </a-scene>
+        <a-plane position="0 1.5 -2" width="0.6" height="0.3" color="#333" opacity="0.8" material="shader: flat">
+    
+    <!-- Zoom In Button -->
+    <a-plane id="zoomInBtn" position="-0.2 0 0.01" width="0.12" height="0.12" color="#fff" class="clickable">
+      <a-image src="images/icons/zoom-in.png" width="0.08" height="0.08" position="0 0 0.01"></a-image>
+    </a-plane>
+
+    <!-- Zoom Out Button -->
+    <a-plane id="zoomOutBtn" position="0.2 0 0.01" width="0.12" height="0.12" color="#fff" class="clickable">
+      <a-image src="images/icons/zoom-out.png" width="0.08" height="0.08" position="0 0 0.01"></a-image>
+    </a-plane>
+
+  </a-plane>
+
+
+      </a-scene>
 
      <script>
        document.addEventListener("DOMContentLoaded", () => {
@@ -119,6 +127,8 @@
         let left_location = right_location = top_location = bottom_location = '';
 
         function update_images(){
+          main_audio.pause();
+          main_audio.currentTime = 0;
           left.setAttribute('visible', left_value !== 0);
           right.setAttribute('visible', right_value !== 0);
           top.setAttribute('visible', top_value !== 0);
@@ -283,8 +293,34 @@
         });
       });
 
-        
 
+      
     </script>
+    <script>
+  AFRAME.registerComponent('zoom-buttons', {
+    init: function () {
+      const camera = document.querySelector('[camera]');
+      const zoomInBtn = document.querySelector('#zoomInBtn');
+      const zoomOutBtn = document.querySelector('#zoomOutBtn');
+
+      zoomInBtn.addEventListener('click', () => {
+        const cam = camera.getAttribute('camera');
+        if (cam.fov > 30) {
+          camera.setAttribute('camera', 'fov', cam.fov - 5);
+        }
+      });
+
+      zoomOutBtn.addEventListener('click', () => {
+        const cam = camera.getAttribute('camera');
+        if (cam.fov < 100) {
+          camera.setAttribute('camera', 'fov', cam.fov + 5);
+        }
+      });
+    }
+  });
+
+  // Attach the component to the scene
+  document.querySelector('a-scene').setAttribute('zoom-buttons', '');
+</script>
   </body>
 </html>
