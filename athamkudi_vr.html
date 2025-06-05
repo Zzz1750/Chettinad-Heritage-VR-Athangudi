@@ -14,7 +14,7 @@
       <a-entity id="cameraRig">
         <a-entity 
           id="camera"
-          camera 
+          camera = "fov: 40"
           look-controls
           position="0 1.0 0">
         </a-entity>
@@ -176,7 +176,7 @@
             left_value = 1;
             top_value = bottom_value = right_value = 0;
             sky.setAttribute('src','./images/scene/5.png');
-            left_location = 'scene5';
+            left_location = 'scene4';
             right_location = top_location = bottom_location = '';
             update_images();
           },
@@ -185,7 +185,7 @@
             right_value = 1;
             top_value = bottom_value = left_value = 0;
             sky.setAttribute('src','./images/scene/6.png');
-            right_location = 'scene5';
+            right_location = 'scene4';
             left_location = top_location = bottom_location = '';
             update_images();
           },
@@ -207,6 +207,7 @@
             left_location = 'scene7';
             right_location = '';
             bottom_location = 'scene5';
+            update_images();
           },
 
           scene9: function(){
@@ -217,6 +218,7 @@
             left_location = '';
             right_location = '';
             bottom_location = 'scene8';
+            update_images();
           },
           
           scene10: function(){
@@ -225,6 +227,7 @@
             sky.setAttribute('src','./images/scene/10.png');
             top_location = left_location = right_location = ''; 
             bottom_location = 'scene9';
+            update_images();
           }
 
         }
