@@ -272,7 +272,7 @@
   <body>
 
     <audio id="main_audio"></audio>
-
+    <audio id="background_audio" src="./audio/background.mp3" loop></audio>
     <div id="loading_container">
       <span id="loader_position">
         <div class="loader"></div> 
@@ -315,19 +315,8 @@
         </a-entity>
       </a-entity>
 
-      <a-entity 
-          laser-controls="hand: left; model: true" 
-          raycaster="objects: .clickable" 
-          line="color: white; opacity: 0.9"
-          visible="true">
-      </a-entity>
-      
-      <a-entity 
-        laser-controls="hand: right; model: true" 
-        raycaster="objects: .clickable" 
-        line="color: white; opacity: 0.9"
-        visible="true">
-      </a-entity>
+      <a-entity laser-controls="hand: left" raycaster="objects: .clickable" line="color: white; opacity: 0.9"></a-entity>
+      <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: white; opacity: 0.9"></a-entity>
      
       <a-plane
         class="clickable"
@@ -674,56 +663,8 @@
         document.getElementById('instruction_container_vr').style.display = 'none';
         document.getElementById('vr_container').style.display = 'block';
         document.getElementById('vr_container').enterVR();
-
+        background_audio.play();
       });
-
-      // More reliable VR controller visibility solution
-document.addEventListener('DOMContentLoaded', function() {
-  const vrScene = document.getElementById('vr_container');
-  
-  // Function to force controller visibility
-  function showControllers() {
-    const leftController = vrScene.querySelector('[laser-controls="hand: left"]');
-    const rightController = vrScene.querySelector('[laser-controls="hand: right"]');
-    
-    if (leftController) {
-      leftController.setAttribute('visible', true);
-      leftController.setAttribute('laser-controls', 'model', true);
-    }
-    
-    if (rightController) {
-      rightController.setAttribute('visible', true);
-      rightController.setAttribute('laser-controls', 'model', true);
-    }
-  }
-
-  vrScene.addEventListener('loaded', function() {
-    vrScene.addEventListener('enter-vr', function() {
-      showControllers();
-      
-      setTimeout(showControllers, 500);
-    });
-
-    if (navigator.xr) {
-      navigator.xr.addEventListener('sessionstart', showControllers);
-    }
-  });
-
-  document.getElementById('start_vr').addEventListener('click', function() {
-    document.getElementById('instruction_container_vr').style.display = 'none';
-    document.getElementById('vr_container').style.display = 'block';
-    
-    const scene = document.getElementById('vr_container');
-    
-    showControllers();
-    
-    if (scene.enterVR) {
-      scene.enterVR().then(() => {
-        setTimeout(showControllers, 300);
-      });
-    }
-  });
-});
 
     </script>
 
