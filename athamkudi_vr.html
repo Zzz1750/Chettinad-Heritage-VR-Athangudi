@@ -138,7 +138,7 @@
         
         #vr_head {
             color: white;
-            font-size: clamp(2rem, 6vw, 4rem);
+            font-size: clamp(2rem, 4vw, 4rem);
             z-index: 10;
             position: absolute;
             left: 5%;
@@ -152,7 +152,7 @@
             position: absolute;
             z-index: 10;
             left: 5%;
-            top: 20%;
+            top: 23%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: clamp(0.8rem, 2vw, 0.9rem);
             margin-right: 5%;
@@ -204,7 +204,7 @@
         #vr_agree_button {
             position: absolute;
             left: 5%;
-            top: 30%;
+            top: 33%;
             padding: 12px 30px;
             font-size: 1rem;
             font-weight: 500;
@@ -665,6 +665,36 @@
         document.getElementById('vr_container').enterVR();
 
       });
+
+      // VR Controller Visibility Fix
+document.addEventListener('DOMContentLoaded', function() {
+  const vrScene = document.getElementById('vr_container');
+  
+  vrScene.addEventListener('loaded', function() {
+    // Force controllers to be visible in VR
+    vrScene.addEventListener('enter-vr', function() {
+      setTimeout(() => {
+        const controllers = vrScene.querySelectorAll('[laser-controls]');
+        controllers.forEach(controller => {
+          controller.setAttribute('visible', true);
+          if (controller.components['laser-controls']) {
+            controller.components['laser-controls'].updateControllerVisibility();
+          }
+        });
+      }, 500); // Small delay to ensure VR is fully initialized
+    });
+    
+    // Also make sure controllers are visible when exiting menu
+    document.addEventListener('buttonchanged', function(evt) {
+      if (evt.detail.id === 'menu' && evt.detail.state === 'up') {
+        const controllers = vrScene.querySelectorAll('[laser-controls]');
+        controllers.forEach(controller => {
+          controller.setAttribute('visible', true);
+        });
+      }
+    });
+  });
+});
 
     </script>
 
